@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	ID        int64   `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	ID        string  `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
 	Username  string  `thrift:"username,2,required" form:"username,required" json:"username,required" query:"username,required"`
 	Password  *string `thrift:"password,3,optional" form:"password" json:"password,omitempty" query:"password"`
 	AvatarURL string  `thrift:"avatar_url,4,required" form:"avatar_url,required" json:"avatar_url,required" query:"avatar_url,required"`
@@ -22,7 +22,7 @@ func NewUser() *User {
 	return &User{}
 }
 
-func (p *User) GetID() (v int64) {
+func (p *User) GetID() (v string) {
 	return p.ID
 }
 
@@ -133,7 +133,7 @@ func (p *User) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -246,7 +246,7 @@ RequiredFieldNotSetError:
 
 func (p *User) ReadField1(iprot thrift.TProtocol) error {
 
-	if v, err := iprot.ReadI64(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.ID = v
@@ -374,10 +374,10 @@ WriteStructEndError:
 }
 
 func (p *User) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.ID); err != nil {
+	if err := oprot.WriteString(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -528,7 +528,7 @@ func (p *User) String() string {
 }
 
 type UserInfo struct {
-	ID        int64   `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	ID        string  `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
 	Username  string  `thrift:"username,2,required" form:"username,required" json:"username,required" query:"username,required"`
 	AvatarURL string  `thrift:"avatar_url,3,required" form:"avatar_url,required" json:"avatar_url,required" query:"avatar_url,required"`
 	CreatedAt *string `thrift:"created_at,4,optional" form:"created_at" json:"created_at,omitempty" query:"created_at"`
@@ -540,7 +540,7 @@ func NewUserInfo() *UserInfo {
 	return &UserInfo{}
 }
 
-func (p *UserInfo) GetID() (v int64) {
+func (p *UserInfo) GetID() (v string) {
 	return p.ID
 }
 
@@ -623,7 +623,7 @@ func (p *UserInfo) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -720,7 +720,7 @@ RequiredFieldNotSetError:
 
 func (p *UserInfo) ReadField1(iprot thrift.TProtocol) error {
 
-	if v, err := iprot.ReadI64(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.ID = v
@@ -822,10 +822,10 @@ WriteStructEndError:
 }
 
 func (p *UserInfo) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.ID); err != nil {
+	if err := oprot.WriteString(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -938,7 +938,7 @@ func (p *UserInfo) String() string {
 }
 
 type Video struct {
-	ID           int64  `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	ID           string `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
 	UserID       string `thrift:"user_id,2,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
 	VideoURL     string `thrift:"video_url,3,required" form:"video_url,required" json:"video_url,required" query:"video_url,required"`
 	CoverURL     string `thrift:"cover_url,4,required" form:"cover_url,required" json:"cover_url,required" query:"cover_url,required"`
@@ -956,7 +956,7 @@ func NewVideo() *Video {
 	return &Video{}
 }
 
-func (p *Video) GetID() (v int64) {
+func (p *Video) GetID() (v string) {
 	return p.ID
 }
 
@@ -1051,7 +1051,7 @@ func (p *Video) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -1250,7 +1250,7 @@ RequiredFieldNotSetError:
 
 func (p *Video) ReadField1(iprot thrift.TProtocol) error {
 
-	if v, err := iprot.ReadI64(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.ID = v
@@ -1430,10 +1430,10 @@ WriteStructEndError:
 }
 
 func (p *Video) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.ID); err != nil {
+	if err := oprot.WriteString(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1642,7 +1642,7 @@ func (p *Video) String() string {
 }
 
 type Comment struct {
-	ID        int64  `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	ID        string `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
 	UserID    string `thrift:"user_id,2,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
 	VideoID   string `thrift:"video_id,3,required" form:"video_id,required" json:"video_id,required" query:"video_id,required"`
 	Content   string `thrift:"content,4,required" form:"content,required" json:"content,required" query:"content,required"`
@@ -1655,7 +1655,7 @@ func NewComment() *Comment {
 	return &Comment{}
 }
 
-func (p *Comment) GetID() (v int64) {
+func (p *Comment) GetID() (v string) {
 	return p.ID
 }
 
@@ -1720,7 +1720,7 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
@@ -1849,7 +1849,7 @@ RequiredFieldNotSetError:
 
 func (p *Comment) ReadField1(iprot thrift.TProtocol) error {
 
-	if v, err := iprot.ReadI64(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		p.ID = v
@@ -1964,10 +1964,10 @@ WriteStructEndError:
 }
 
 func (p *Comment) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.ID); err != nil {
+	if err := oprot.WriteString(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {

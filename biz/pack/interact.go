@@ -8,7 +8,7 @@ import (
 
 func Comment(data *db.Comment) *model.Comment {
 	return &model.Comment{
-		ID:        data.CommentId,
+		ID:        strconv.FormatInt(data.CommentId, 10),
 		UserID:    data.UserId,
 		VideoID:   data.VideoId,
 		Content:   data.Content,

@@ -63,8 +63,8 @@ func Login(ctx context.Context, c *app.RequestContext) {
 
 	resp.Base = pack.BuildBaseResp(nil)
 	resp.Data = pack.UserInfo(userResp)
-	resp.AccessToken = c.GetString("Access-Token")
-	resp.RefreshToken = c.GetString("Refresh-Token")
+	c.Header("Access-Token", c.GetString("Access-Token"))
+	c.Header("Refresh-Token", c.GetString("Refresh-Token"))
 
 	pack.SendResponse(c, resp, consts.StatusOK)
 }

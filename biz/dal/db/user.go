@@ -10,10 +10,10 @@ import (
 	"github.com/pquerna/otp/totp"
 	"image/png"
 	"work4/biz/model/user"
+	"work4/bootstrap/env"
 	"work4/pkg/util"
 
 	"work4/pkg/crypt"
-	"work4/pkg/env"
 )
 
 func OptSecret(user *User) (*MFA, error) {

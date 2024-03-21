@@ -22,6 +22,7 @@ type UserInfo struct {
 	AvatarUrl string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Video struct {

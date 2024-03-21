@@ -6,29 +6,20 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"work4/biz/dal"
 	"work4/biz/middleware"
-	"work4/pkg/env"
-	"work4/pkg/util"
+	"work4/bootstrap/env"
 )
 
-func Init() chan struct{} {
+func Init() {
 	env.Init()
 	dal.Init()
 	middleware.Init()
-	stopChan := make(chan struct{})
-	go dal.SyncInit(stopChan)
-	return stopChan
-
 }
 
 func main() {
 
-	stopChan := Init()
+	Init()
 
 	h := server.Default(server.WithHostPorts("0.0.0.0:10001"))
-
-	h.SetCustomSignalWaiter(func(err chan error) error {
-		return util.SignalWaiter(err, stopChan)
-	})
 
 	register(h)
 	h.Spin()

@@ -22,7 +22,7 @@ var (
 	QiNiuDomain    string
 )
 
-func Init()  {
+func Init() {
 
 	file, err := ini.Load("config/config.ini")
 	if err != nil {
@@ -35,7 +35,7 @@ func Init()  {
 	MySQLPort := file.Section("MySQL").Key("Port").String()
 	MySQLName := file.Section("MySQL").Key("Name").String()
 
-	MySQLDSN=MySQLUserName+":"+MySQLPassWord+"@tcp("+MySQLHost+":"+MySQLPort+")/"+MySQLName+"?charset=utf8mb4&parseTime=true"
+	MySQLDSN = MySQLUserName + ":" + MySQLPassWord + "@tcp(" + MySQLHost + ":" + MySQLPort + ")/" + MySQLName + "?charset=utf8mb4&parseTime=true"
 
 	RedisUserName := file.Section("Redis").Key("UserName").String()
 	RedisPassWord := file.Section("Redis").Key("PassWord").String()
@@ -43,14 +43,11 @@ func Init()  {
 	RedisPort := file.Section("Redis").Key("Port").String()
 	RedisDB := file.Section("Redis").Key("DB").String()
 
-	RedisDSN="redis://"+RedisUserName+":"+RedisPassWord+"@"+RedisHost+":"+RedisPort+"/"+RedisDB
+	RedisDSN = "redis://" + RedisUserName + ":" + RedisPassWord + "@" + RedisHost + ":" + RedisPort + "/" + RedisDB
 
-	QiNiuBucket=file.Section("QiNiu").Key("Bucket").String()
-	QiNiuAccessKey=file.Section("QiNiu").Key("AccessKey").String()
-	QiNiuSecretKey=file.Section("QiNiu").Key("SecretKey").String()
-	QiNiuDomain=file.Section("QiNiu").Key("Domain").String()
-
-
-
+	QiNiuBucket = file.Section("QiNiu").Key("Bucket").String()
+	QiNiuAccessKey = file.Section("QiNiu").Key("AccessKey").String()
+	QiNiuSecretKey = file.Section("QiNiu").Key("SecretKey").String()
+	QiNiuDomain = file.Section("QiNiu").Key("Domain").String()
 
 }
