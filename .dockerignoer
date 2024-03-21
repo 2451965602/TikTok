@@ -1,0 +1,8 @@
+.git
+config/sql/*
+tree.txt
+.gitignore
+script/*
+idl/*
+.editorconfig
+.gitattributes
