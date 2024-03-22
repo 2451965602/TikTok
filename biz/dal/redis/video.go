@@ -76,7 +76,13 @@ func GetVisitCount(ctx context.Context, videoid string) (int64, error) {
 	count, err := RDB.ZScore(ctx, videoKey, videoid).Result()
 
 	if err != nil {
-		return -1, err
+
+		if err == redis.Nil {
+			return 0, nil
+		} else {
+			return -1, err
+		}
+
 	}
 
 	return int64(count), nil

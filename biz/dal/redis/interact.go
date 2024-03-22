@@ -111,14 +111,20 @@ func GetLikeCount(ctx context.Context, videoid string) (int64, error) {
 	count, err := RDB.ZScore(ctx, LikeKey, videoid).Result()
 
 	if err != nil {
-		return -1, err
+
+		if err == redis.Nil {
+			return 0, nil
+		} else {
+			return -1, err
+		}
+
 	}
 
 	return int64(count), nil
 
 }
 
-var CommentKey = "LikeRank"
+var CommentKey = "CommentRank"
 
 func CreatCommentCount(ctx context.Context, videoid string) error {
 
@@ -223,7 +229,13 @@ func GetCommentCount(ctx context.Context, videoid string) (int64, error) {
 	count, err := RDB.ZScore(ctx, CommentKey, videoid).Result()
 
 	if err != nil {
-		return -1, err
+
+		if err == redis.Nil {
+			return 0, nil
+		} else {
+			return -1, err
+		}
+
 	}
 
 	return int64(count), nil

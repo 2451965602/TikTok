@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strconv"
 	"work4/biz/dal/redis"
-	"work4/pkg/env"
+	"work4/bootstrap/env"
 )
 
 func LikeVideo(ctx context.Context, userid, videoid, actiontype string) error {
@@ -32,22 +32,14 @@ func LikeVideo(ctx context.Context, userid, videoid, actiontype string) error {
 			return err
 		}
 
-		err = redis.AddLikeCount(ctx, videoid)
-		if err != nil {
-			return err
-		}
 	} else {
 		err := DB.
 			WithContext(ctx).
 			Table(env.LikeTable).
+			Where("user_id = ?", userid).
 			Delete(&LikeResp).
 			Error
 
-		if err != nil {
-			return err
-		}
-
-		err = redis.ReduceLikeCount(ctx, videoid)
 		if err != nil {
 			return err
 		}
@@ -126,16 +118,6 @@ func CreatComment(ctx context.Context, userid, videoid, content string) error {
 		return err
 	}
 
-	err = redis.UpdateRank(ctx, videoid)
-	if err != nil {
-		return err
-	}
-
-	err = redis.AddCommentCount(ctx, videoid)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -185,16 +167,6 @@ func DeleteComment(ctx context.Context, userid, videoid, commentid int64) error 
 		}).
 		Error
 
-	if err != nil {
-		return err
-	}
-
-	err = redis.UpdateRank(ctx, strconv.FormatInt(videoid, 10))
-	if err != nil {
-		return err
-	}
-
-	err = redis.ReduceCommentCount(ctx, strconv.FormatInt(videoid, 10))
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"work4/pkg/env"
+	"work4/bootstrap/env"
 )
 
 func IsImage(data *multipart.FileHeader) error {

@@ -2,7 +2,7 @@ package redis
 
 import (
 	"github.com/redis/go-redis/v9"
-	"work4/pkg/env"
+	"work4/bootstrap/env"
 )
 
 var RDB *redis.Client

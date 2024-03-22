@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"work4/biz/dal/redis"
 	"work4/biz/model/video"
-	"work4/pkg/env"
+	"work4/bootstrap/env"
 )
 
 func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) {
@@ -21,8 +20,8 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 	var err error
 	var count int64
 
-	if req.LatestTime != nil {
-		totime, err := strconv.ParseInt(*req.LatestTime, 10, 64)
+	if req.LatestTime != nil && *req.LatestTime != "" {
+		toTime, err := strconv.ParseInt(*req.LatestTime, 10, 64)
 		if err != nil {
 			return nil, -1, err
 		}
@@ -30,7 +29,7 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 		err = DB.
 			WithContext(ctx).
 			Table(env.VideoTable).
-			Where("created_at > ? ", time.Unix(totime, 0)).
+			Where("created_at > ? ", time.Unix(toTime, 0)).
 			Count(&count).
 			Find(&videoResp).
 			Error
@@ -54,16 +53,16 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 	return videoResp, count, nil
 }
 
-func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, description string) error {
+func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, description string) (int64, error) {
 
 	if DB == nil {
-		return errors.New("DB object is nil")
+		return -1, errors.New("DB object is nil")
 	}
 
 	var err error
-	var video *Video
+	var videoInfo *Video
 
-	video = &Video{
+	videoInfo = &Video{
 		UserId:      userid,
 		VideoUrl:    videourl,
 		CoverUrl:    coverurl,
@@ -75,19 +74,14 @@ func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, descrip
 		WithContext(ctx).
 		Table(env.VideoTable).
 		Where("user_id=?", userid).
-		Create(&video).
+		Create(&videoInfo).
 		Error
 
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	err = redis.AddRank(ctx, strconv.FormatInt(video.VideoId, 10))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return videoInfo.VideoId, nil
 }
 
 func UploadList(ctx context.Context, pagenum, pagesize int64, userid string) ([]*Video, int64, error) {
@@ -234,64 +228,4 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 	}
 
 	return videoResp, count, nil
-}
-
-func UpdateLikeCount(ctx context.Context, count, videoid string) error {
-
-	if DB == nil {
-		return errors.New("DB object is nil")
-	}
-
-	err := DB.
-		WithContext(ctx).
-		Table(env.VideoTable).
-		Where("video_id = ?", videoid).
-		Update("like_count=?", count).
-		Error
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func UpdateCommentCount(ctx context.Context, count, videoid string) error {
-
-	if DB == nil {
-		return errors.New("DB object is nil")
-	}
-
-	err := DB.
-		WithContext(ctx).
-		Table(env.VideoTable).
-		Where("video_id = ?", videoid).
-		Update("comment_count=?", count).
-		Error
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func UpdateVisitCount(ctx context.Context, count, videoid string) error {
-
-	if DB == nil {
-		return errors.New("DB object is nil")
-	}
-
-	err := DB.
-		WithContext(ctx).
-		Table(env.VideoTable).
-		Where("video_id = ?", videoid).
-		Update("visit_count=?", count).
-		Error
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
