@@ -10,7 +10,7 @@ func User(data *db.User) *model.User {
 	create := strconv.FormatInt(data.CreatedAt.Unix(), 10)
 	update := strconv.FormatInt(data.UpdatedAt.Unix(), 10)
 	return &model.User{
-		ID:        strconv.FormatInt(data.UserId, 10),
+		ID:        data.UserId,
 		Username:  data.Username,
 		Password:  &data.Password,
 		AvatarURL: data.AvatarUrl,
@@ -20,7 +20,7 @@ func User(data *db.User) *model.User {
 	}
 }
 
-func UserInfo(data *db.UserInfo) *model.UserInfo {
+func UserInfoDetail(data *db.UserInfoDetail) *model.UserInfo {
 	createat := data.CreatedAt.Format("2006-01-02 15:04:05")
 
 	updateat := ""
@@ -47,6 +47,25 @@ func UserInfo(data *db.UserInfo) *model.UserInfo {
 	}
 }
 
+func UserInfo(data *db.UserInfoDetail) *model.UserInfo {
+	createat := data.CreatedAt.Format("2006-01-02 15:04:05")
+
+	updateat := ""
+	if !data.UpdatedAt.IsZero() {
+		updateat = data.UpdatedAt.Format("2006-01-02 15:04:05")
+	} else {
+		updateat = "1970-01-01 08:00:00"
+	}
+
+	return &model.UserInfo{
+		ID:        strconv.FormatInt(data.UserId, 10),
+		Username:  data.Username,
+		AvatarURL: data.AvatarUrl,
+		CreatedAt: &createat,
+		UpdatedAt: &updateat,
+	}
+}
+
 func UserList(data []*db.User, total int64) *model.UserList {
 	resp := make([]*model.User, 0, len(data))
 
@@ -60,7 +79,7 @@ func UserList(data []*db.User, total int64) *model.UserList {
 	}
 }
 
-func UserInfoList(data []*db.UserInfo, total int64) *model.UserInfoList {
+func UserInfoList(data []*db.UserInfoDetail, total int64) *model.UserInfoList {
 	resp := make([]*model.UserInfo, 0, len(data))
 
 	for _, v := range data {

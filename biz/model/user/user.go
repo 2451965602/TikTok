@@ -648,10 +648,8 @@ func (p *LoginRequest) String() string {
 }
 
 type LoginResponse struct {
-	Base         *model.BaseResp `thrift:"base,1" form:"base" json:"base" query:"base"`
-	Data         *model.UserInfo `thrift:"data,2" form:"data" json:"data" query:"data"`
-	AccessToken  string          `thrift:"access_token,3" form:"access_token" json:"access_token" query:"access_token"`
-	RefreshToken string          `thrift:"refresh_token,4" form:"refresh_token" json:"refresh_token" query:"refresh_token"`
+	Base *model.BaseResp `thrift:"base,1" form:"base" json:"base" query:"base"`
+	Data *model.UserInfo `thrift:"data,2" form:"data" json:"data" query:"data"`
 }
 
 func NewLoginResponse() *LoginResponse {
@@ -676,19 +674,9 @@ func (p *LoginResponse) GetData() (v *model.UserInfo) {
 	return p.Data
 }
 
-func (p *LoginResponse) GetAccessToken() (v string) {
-	return p.AccessToken
-}
-
-func (p *LoginResponse) GetRefreshToken() (v string) {
-	return p.RefreshToken
-}
-
 var fieldIDToName_LoginResponse = map[int16]string{
 	1: "base",
 	2: "data",
-	3: "access_token",
-	4: "refresh_token",
 }
 
 func (p *LoginResponse) IsSetBase() bool {
@@ -729,22 +717,6 @@ func (p *LoginResponse) Read(iprot thrift.TProtocol) (err error) {
 		case 2:
 			if fieldTypeId == thrift.STRUCT {
 				if err = p.ReadField2(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 3:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField3(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		case 4:
-			if fieldTypeId == thrift.STRING {
-				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -793,24 +765,6 @@ func (p *LoginResponse) ReadField2(iprot thrift.TProtocol) error {
 	}
 	return nil
 }
-func (p *LoginResponse) ReadField3(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.AccessToken = v
-	}
-	return nil
-}
-func (p *LoginResponse) ReadField4(iprot thrift.TProtocol) error {
-
-	if v, err := iprot.ReadString(); err != nil {
-		return err
-	} else {
-		p.RefreshToken = v
-	}
-	return nil
-}
 
 func (p *LoginResponse) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -824,14 +778,6 @@ func (p *LoginResponse) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField2(oprot); err != nil {
 			fieldId = 2
-			goto WriteFieldError
-		}
-		if err = p.writeField3(oprot); err != nil {
-			fieldId = 3
-			goto WriteFieldError
-		}
-		if err = p.writeField4(oprot); err != nil {
-			fieldId = 4
 			goto WriteFieldError
 		}
 	}
@@ -884,40 +830,6 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
-}
-
-func (p *LoginResponse) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("access_token", thrift.STRING, 3); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.AccessToken); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
-}
-
-func (p *LoginResponse) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("refresh_token", thrift.STRING, 4); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.RefreshToken); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
 func (p *LoginResponse) String() string {

@@ -4,8 +4,9 @@ include "model.thrift"
 
 //点赞操作
 struct LikeRequest{
-    1:required string video_id,
-    2:required string action_type,
+    1:optional string video_id,
+    2:optional string comment_id,
+    3:required string action_type,
 }
 
 struct LikeResponse{
@@ -26,8 +27,9 @@ struct LikeListResponse{
 
 //评论
 struct CommentRequest{
-    1:required string video_id,
-    2:required string content,
+    1:optional string video_id,
+    2:optional string comment_id,
+    3:required string content,
 }
 
 struct CommentResponse{
@@ -48,8 +50,8 @@ struct CommentListResponse{
 
 //删除评论
 struct DeleteCommentRequest{
-    1:required string video_id,
-    2:required string comment_id,
+    1:required string comment_id,
+
 }
 
 struct DeleteCommentResponse{

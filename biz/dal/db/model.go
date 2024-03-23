@@ -22,6 +22,14 @@ type UserInfo struct {
 	AvatarUrl string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type UserInfoDetail struct {
+	UserId    int64
+	Username  string
+	AvatarUrl string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
@@ -44,6 +52,7 @@ type Comment struct {
 	CommentId int64
 	UserId    string
 	VideoId   string
+	RootId    string
 	Content   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -62,6 +71,7 @@ type Social struct {
 }
 
 type Like struct {
-	UserId  string
-	VideoId string
+	UserId  int64
+	RootId  int64
+	VideoId int64
 }

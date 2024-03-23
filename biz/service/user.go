@@ -23,12 +23,12 @@ func (s *UserService) Register(req *user.RegisterRequest) (*db.User, error) {
 	return db.CreateUser(s.ctx, req.Username, req.Password)
 }
 
-func (s *UserService) Login(req *user.LoginRequest) (*db.UserInfo, error) {
+func (s *UserService) Login(req *user.LoginRequest) (*db.UserInfoDetail, error) {
 
 	return db.LoginCheck(s.ctx, req)
 }
 
-func (s *UserService) GetInfo(req *user.InfoRequest) (*db.UserInfo, error) {
+func (s *UserService) GetInfo(req *user.InfoRequest) (*db.UserInfoDetail, error) {
 	return db.GetInfo(s.ctx, req.UserID)
 }
 

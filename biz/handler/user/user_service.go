@@ -62,7 +62,7 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	middleware.RefreshTokenJwtMiddleware.LoginHandler(ctx, c)
 
 	resp.Base = pack.BuildBaseResp(nil)
-	resp.Data = pack.UserInfo(userResp)
+	resp.Data = pack.UserInfoDetail(userResp)
 	c.Header("Access-Token", c.GetString("Access-Token"))
 	c.Header("Refresh-Token", c.GetString("Refresh-Token"))
 
@@ -90,7 +90,7 @@ func Info(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp.Base = pack.BuildBaseResp(nil)
-	resp.Data = pack.UserInfo(userResp)
+	resp.Data = pack.UserInfoDetail(userResp)
 
 	pack.SendResponse(c, resp, consts.StatusOK)
 }

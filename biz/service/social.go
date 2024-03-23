@@ -37,14 +37,68 @@ func (s *SocialService) Star(req *social.StarRequest) error {
 
 }
 
-func (s *SocialService) StarList(req *social.StarListRequest) ([]*db.UserInfo, int64, error) {
-	return db.StarUserList(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.PageNum, req.PageSize)
+func (s *SocialService) StarList(req *social.StarListRequest) ([]*db.UserInfoDetail, int64, error) {
+
+	var (
+		resp []*db.UserInfoDetail
+	)
+	data, count, err := db.StarUserList(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.PageNum, req.PageSize)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	for _, v := range data {
+		UserInfo, err := db.GetInfo(s.ctx, strconv.FormatInt(v.UserId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+
+		resp = append(resp, UserInfo)
+	}
+
+	return resp, count, nil
 }
 
-func (s *SocialService) FanList(req *social.FanListRequest) ([]*db.UserInfo, int64, error) {
-	return db.FanUserList(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.PageNum, req.PageSize)
+func (s *SocialService) FanList(req *social.FanListRequest) ([]*db.UserInfoDetail, int64, error) {
+
+	var (
+		resp []*db.UserInfoDetail
+	)
+	data, count, err := db.FanUserList(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.PageNum, req.PageSize)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	for _, v := range data {
+		UserInfo, err := db.GetInfo(s.ctx, strconv.FormatInt(v.UserId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+
+		resp = append(resp, UserInfo)
+	}
+
+	return resp, count, nil
 }
 
-func (s *SocialService) FriendList(req *social.FriendListRequest) ([]*db.UserInfo, int64, error) {
-	return db.FriendUser(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.PageNum, req.PageSize)
+func (s *SocialService) FriendList(req *social.FriendListRequest) ([]*db.UserInfoDetail, int64, error) {
+
+	var (
+		resp []*db.UserInfoDetail
+	)
+	data, count, err := db.FriendUser(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.PageNum, req.PageSize)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	for _, v := range data {
+		UserInfo, err := db.GetInfo(s.ctx, strconv.FormatInt(v.UserId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+
+		resp = append(resp, UserInfo)
+	}
+
+	return resp, count, nil
 }

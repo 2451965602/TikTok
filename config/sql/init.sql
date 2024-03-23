@@ -26,26 +26,28 @@ CREATE TABLE west.`video`
     `updated_at`    timestamp    NOT NULL ON UPDATE current_timestamp DEFAULT current_timestamp,
     `deleted_at`    timestamp NULL DEFAULT NULL,
     CONSTRAINT `video_id` PRIMARY KEY (`video_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=100000000000000000 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE west.`comment`
 (
+    `video_id` varchar(255) NULL DEFAULT NULL,
+    `root_id`  varchar(255) NULL DEFAULT NULL,
+    `user_id`  varchar(255) NOT NULL,
     `comment_id` bigint       NOT NULL AUTO_INCREMENT,
-    `user_id`    bigint       NOT NULL,
-    `video_id`   bigint       NOT NULL,
     `content`    varchar(255) NOT NULL,
     `created_at` timestamp    NOT NULL DEFAULT current_timestamp,
     `updated_at` timestamp    NOT NULL ON UPDATE current_timestamp DEFAULT current_timestamp,
     `deleted_at` timestamp NULL DEFAULT NULL,
     CONSTRAINT `comment_id` PRIMARY KEY (`comment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1000000000000000000 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE west.`like`
 (
     `user_id`  bigint NOT NULL,
-    `video_id` bigint NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES user(user_id)
-) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+    `video_id` bigint NULL DEFAULT NULL,
+    `root_id`  bigint NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE west.`social`
 (
@@ -53,4 +55,4 @@ CREATE TABLE west.`social`
     `to_user_id` bigint NOT NULL,
     `status`     bigint NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
-) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;

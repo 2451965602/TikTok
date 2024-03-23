@@ -176,7 +176,6 @@ func FanUserList(ctx context.Context, userid string, pagenum, pagesize int64) ([
 	if err != nil {
 		return nil, -1, err
 	}
-
 	return StarResp, count, nil
 }
 
@@ -187,6 +186,7 @@ func FriendUser(ctx context.Context, userid string, pagenum, pagesize int64) ([]
 	}
 
 	var StarResp []*UserInfo
+	var userId []*string
 	var err error
 	var count int64
 
@@ -198,7 +198,7 @@ func FriendUser(ctx context.Context, userid string, pagenum, pagesize int64) ([]
 		Limit(int(pagesize)).
 		Offset(int((pagenum - 1) * pagesize)).
 		Count(&count).
-		Find(&StarResp).
+		Find(&userId).
 		Error
 
 	if err != nil {

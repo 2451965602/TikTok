@@ -8,9 +8,10 @@ import (
 
 func Comment(data *db.Comment) *model.Comment {
 	return &model.Comment{
-		ID:        strconv.FormatInt(data.CommentId, 10),
+		ID:        data.CommentId,
 		UserID:    data.UserId,
 		VideoID:   data.VideoId,
+		RootID:    data.RootId,
 		Content:   data.Content,
 		CreatedAt: strconv.FormatInt(data.CreatedAt.Unix(), 10),
 		UpdatedAt: strconv.FormatInt(data.UpdatedAt.Unix(), 10),
@@ -19,8 +20,9 @@ func Comment(data *db.Comment) *model.Comment {
 
 func Like(data *db.Like) *model.Like {
 	return &model.Like{
-		UserID:  data.UserId,
-		VideoID: data.VideoId,
+		UserID:  strconv.FormatInt(data.UserId, 10),
+		VideoID: strconv.FormatInt(data.VideoId, 10),
+		RootID:  strconv.FormatInt(data.RootId, 10),
 	}
 }
 

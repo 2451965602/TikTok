@@ -3,12 +3,11 @@ package db
 import (
 	"context"
 	"errors"
-	"strconv"
-	"work4/biz/dal/redis"
+	"gorm.io/gorm"
 	"work4/bootstrap/env"
 )
 
-func LikeVideo(ctx context.Context, userid, videoid, actiontype string) error {
+func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) (err error) {
 
 	if DB == nil {
 		return errors.New("DB object is nil")
@@ -16,13 +15,39 @@ func LikeVideo(ctx context.Context, userid, videoid, actiontype string) error {
 
 	var LikeResp *Like
 
-	LikeResp = &Like{
-		UserId:  userid,
-		VideoId: videoid,
+	if sort == "video" {
+
+		LikeResp = &Like{
+			UserId:  userid,
+			VideoId: id,
+			RootId:  0,
+		}
+
+	} else {
+		LikeResp = &Like{
+			UserId:  userid,
+			VideoId: 0,
+			RootId:  id,
+		}
+
 	}
 
 	if actiontype == "1" {
-		err := DB.
+
+		err = DB.
+			WithContext(ctx).
+			Table(env.LikeTable).
+			Where("root_id=?", id).
+			Or("video_id=?", id).
+			Or("user_id=?", userid).
+			First(&LikeResp).
+			Error
+
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("当前已点赞，请勿重复操作")
+		}
+
+		err = DB.
 			WithContext(ctx).
 			Table(env.LikeTable).
 			Create(&LikeResp).
@@ -33,21 +58,32 @@ func LikeVideo(ctx context.Context, userid, videoid, actiontype string) error {
 		}
 
 	} else {
-		err := DB.
+
+		err = DB.
 			WithContext(ctx).
 			Table(env.LikeTable).
-			Where("user_id = ?", userid).
+			Where("root_id=?", id).
+			Or("video_id=?", id).
+			Or("user_id=?", userid).
+			First(&LikeResp).
+			Error
+
+		if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("当前未点赞，请勿重复操作")
+		}
+
+		err = DB.
+			WithContext(ctx).
+			Table(env.LikeTable).
+			Where("root_id=?", id).
+			Or("video_id=?", id).
+			Or("user_id=?", userid).
 			Delete(&LikeResp).
 			Error
 
 		if err != nil {
 			return err
 		}
-	}
-
-	err := redis.UpdateRank(ctx, videoid)
-	if err != nil {
-		return err
 	}
 
 	return nil
@@ -94,7 +130,7 @@ func LikeList(ctx context.Context, userid string, pagenum, pagesize int64) ([]*V
 	return LikeResp, count, nil
 }
 
-func CreatComment(ctx context.Context, userid, videoid, content string) error {
+func CreatComment(ctx context.Context, userid, id, content, sort string) error {
 
 	if DB == nil {
 		return errors.New("DB object is nil")
@@ -102,10 +138,22 @@ func CreatComment(ctx context.Context, userid, videoid, content string) error {
 
 	var CommentResp *Comment
 
-	CommentResp = &Comment{
-		UserId:  userid,
-		VideoId: videoid,
-		Content: content,
+	if sort == "video" {
+
+		CommentResp = &Comment{
+			UserId:  userid,
+			VideoId: id,
+			Content: content,
+		}
+
+	} else {
+
+		CommentResp = &Comment{
+			UserId:  userid,
+			RootId:  id,
+			Content: content,
+		}
+
 	}
 
 	err := DB.
@@ -148,28 +196,39 @@ func CommentList(ctx context.Context, videoid string, pagenum, pagesize int64) (
 	return CommentResp, count, nil
 }
 
-func DeleteComment(ctx context.Context, userid, videoid, commentid int64) error {
+func DeleteComment(ctx context.Context, userid string, commentid int64) (videoid int64, err error) {
 
 	if DB == nil {
-		return errors.New("DB object is nil")
+		return -1, errors.New("DB object is nil")
 	}
 
-	err := DB.
+	var commentInfo Comment
+
+	err = DB.
 		WithContext(ctx).
 		Table(env.CommentTable).
-		Where("user_id=?", userid).
-		Where("video_id=?", videoid).
 		Where("comment_id=?", commentid).
+		Select("video_id").
+		First(&commentInfo).
+		Error
+
+	if err != nil {
+		return -1, err
+	}
+
+	err = DB.
+		WithContext(ctx).
+		Table(env.CommentTable).
+		Where("comment_id = ?", commentid).
 		Delete(&Comment{
 			CommentId: commentid,
-			UserId:    strconv.FormatInt(userid, 10),
-			VideoId:   strconv.FormatInt(videoid, 10),
+			UserId:    userid,
 		}).
 		Error
 
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	return nil
+	return -1, nil
 }
