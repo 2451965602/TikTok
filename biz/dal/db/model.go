@@ -75,3 +75,12 @@ type Like struct {
 	RootId  int64
 	VideoId int64
 }
+
+type Message struct {
+	MsgId      int64
+	FromUserId string
+	ToUserId   string
+	Content    string
+	CreatedAt  time.Time
+	Status     int64
+}

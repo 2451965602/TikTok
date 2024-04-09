@@ -4,8 +4,10 @@ package main
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"work4/biz/dal"
 	"work4/biz/middleware"
+	"work4/biz/router/websock"
 	"work4/bootstrap/env"
 )
 
@@ -20,7 +22,13 @@ func main() {
 	Init()
 
 	h := server.Default(server.WithHostPorts("0.0.0.0:10001"))
+	ws := server.Default(server.WithHostPorts(`:10000`))
+
+	ws.NoHijackConnPool = true
 
 	register(h)
+	hlog.Infof("launch")
+	websock.WebsocketRegister(ws)
+	go ws.Spin()
 	h.Spin()
 }

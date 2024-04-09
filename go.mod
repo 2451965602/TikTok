@@ -9,11 +9,13 @@ require (
 	github.com/cloudwego/hertz v0.8.0
 	github.com/h2non/filetype v1.1.3
 	github.com/hertz-contrib/jwt v1.0.2
+	github.com/hertz-contrib/websocket v0.1.0
 	github.com/pquerna/otp v1.4.0
 	github.com/qiniu/go-sdk/v7 v7.19.0
 	github.com/redis/go-redis/v9 v9.4.0
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/crypto v0.1.0
+	gopkg.in/ini.v1 v1.67.0
 	gorm.io/driver/mysql v1.5.4
 	gorm.io/gorm v1.25.7
 )
@@ -45,5 +47,4 @@ require (
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/ini.v1 v1.67.0 // indirect
 )

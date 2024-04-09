@@ -55,4 +55,15 @@ CREATE TABLE west.`social`
     `to_user_id` bigint NOT NULL,
     `status`     bigint NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4
+
+CREATE TABLE west.`messages`
+(
+    `msg_id`       bigint       NOT NULL AUTO_INCREMENT,
+    `from_user_id` bigint       NOT NULL,
+    `to_user_id`   bigint       NOT NULL,
+    `content`      varchar(255) NOT NULL,
+    `created_at`   timestamp    NOT NULL DEFAULT current_timestamp,
+    `status`       bigint       NOT NULL,
+    CONSTRAINT `msg_id` PRIMARY KEY (`msg_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;

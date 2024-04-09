@@ -11,7 +11,6 @@ import (
 func Auth() []app.HandlerFunc {
 	return append(make([]app.HandlerFunc, 0),
 		DoubleTokenAuthFunc(),
-		//jwt.AccessTokenJwtMiddleware.MiddlewareFunc(),
 	)
 }
 
