@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"image/png"
@@ -28,7 +27,7 @@ func OptSecret(user *User) (*MFA, error) {
 		if err != nil {
 			return nil, err
 		}
-		hlog.Infof("\n\n\ninfo:\n\n\n", key)
+
 		user.OptSecret = key.String()
 
 	}
@@ -37,7 +36,6 @@ func OptSecret(user *User) (*MFA, error) {
 	if err != nil {
 		return nil, err
 	}
-	hlog.Infof("\n\n\ninfo:%+v\n\n\n", key)
 
 	img, err := key.Image(200, 200)
 	if err != nil {
@@ -106,14 +104,14 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 	return userResp, nil
 }
 
-func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfo, error) {
+func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, error) {
 
 	if DB == nil {
 		return nil, errors.New("DB object is nil")
 	}
 
 	var userreq *User
-	var userResp *UserInfo
+	var userResp *UserInfoDetail
 
 	err := DB.
 		WithContext(ctx).
@@ -142,7 +140,7 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfo, error) 
 		}
 	}
 
-	userResp = &UserInfo{
+	userResp = &UserInfoDetail{
 		UserId:    userreq.UserId,
 		Username:  userreq.Username,
 		AvatarUrl: userreq.AvatarUrl,
@@ -152,13 +150,13 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfo, error) 
 	return userResp, nil
 }
 
-func GetInfo(ctx context.Context, id string) (*UserInfo, error) {
+func GetInfo(ctx context.Context, id string) (*UserInfoDetail, error) {
 
 	if DB == nil {
 		return nil, errors.New("DB object is nil")
 	}
 
-	var userResp *UserInfo
+	var userResp *UserInfoDetail
 
 	err := DB.
 		WithContext(ctx).

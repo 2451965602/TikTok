@@ -22,8 +22,6 @@ struct LoginRequest{
 struct LoginResponse{
     1:model.BaseResp base,
     2:model.UserInfo data,
-    3:string access_token,
-    4:string refresh_token,
 }
 //用户信息
 struct InfoRequest{

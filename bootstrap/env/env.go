@@ -14,6 +14,7 @@ var (
 	CommentTable = "comment"
 	LikeTable    = "like"
 	SocialTable  = "social"
+	MsgTable     = "messages"
 	ContextUid   = "userid"
 
 	QiNiuBucket    string

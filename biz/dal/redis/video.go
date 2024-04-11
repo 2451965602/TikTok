@@ -22,12 +22,6 @@ func AddRank(ctx context.Context, videoid string) error {
 	}
 
 	_, err := RDB.ZAdd(ctx, videoKey, videoResp).Result()
-
-	if err != nil {
-		return err
-	}
-
-	err = CreatVideoId(ctx, videoid)
 	if err != nil {
 		return err
 	}
@@ -43,7 +37,7 @@ func UpdateRank(ctx context.Context, videoid string) error {
 
 	score, err := RDB.ZScore(ctx, videoKey, videoid).Result()
 
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -53,13 +47,7 @@ func UpdateRank(ctx context.Context, videoid string) error {
 	}
 
 	_, err = RDB.ZAdd(ctx, videoKey, videoResp).Result()
-
-	if err != nil {
-		return err
-	}
-
-	err = CreatVideoId(ctx, videoid)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -96,7 +84,7 @@ func RankList(ctx context.Context) ([]string, error) {
 	}
 
 	rank, err := RDB.ZRevRange(ctx, videoKey, 0, -1).Result()
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return nil, err
 	}
 

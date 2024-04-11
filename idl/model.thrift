@@ -12,7 +12,7 @@ struct User {
 }
 
 struct UserInfo {
-    1:required i64 id,
+    1:required string id,
     2:required string username,
     3:required string avatar_url,
     4:optional string created_at,
@@ -38,16 +38,18 @@ struct Video {
 struct Comment {
     1:required i64 id,
     2:required string user_id,
-    3:required string video_id,
-    4:required string content,
-    5:required string created_at,
-    6:required string updated_at,
-    7:required string deleted_at,
+    3:required string root_id,
+    4:required string video_id,
+    5:required string content,
+    6:required string created_at,
+    7:required string updated_at,
+    8:required string deleted_at,
 }
 
 struct like {
     1:required string user_id,
-    2:required string video_id,
+    2:required string root_id,
+    3:required string video_id,
 }
 
 struct UserList{

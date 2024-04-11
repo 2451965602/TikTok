@@ -41,7 +41,7 @@ func AddLikeCount(ctx context.Context, videoid string) error {
 
 		if err == redis.Nil {
 			err = CreatLikeCount(ctx, videoid)
-			if err != nil {
+			if err != nil && err != redis.Nil {
 				return err
 			}
 		} else {
@@ -56,12 +56,6 @@ func AddLikeCount(ctx context.Context, videoid string) error {
 	}
 
 	_, err = RDB.ZAdd(ctx, LikeKey, videoResp).Result()
-
-	if err != nil {
-		return err
-	}
-
-	err = CreatVideoId(ctx, videoid)
 	if err != nil {
 		return err
 	}
@@ -78,7 +72,7 @@ func ReduceLikeCount(ctx context.Context, videoid string) error {
 
 	score, err := RDB.ZScore(ctx, LikeKey, videoid).Result()
 
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -88,13 +82,7 @@ func ReduceLikeCount(ctx context.Context, videoid string) error {
 	}
 
 	_, err = RDB.ZAdd(ctx, LikeKey, videoResp).Result()
-
-	if err != nil {
-		return err
-	}
-
-	err = CreatVideoId(ctx, videoid)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -139,7 +127,7 @@ func CreatCommentCount(ctx context.Context, videoid string) error {
 
 	_, err := RDB.ZAdd(ctx, CommentKey, videoResp).Result()
 
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -174,13 +162,7 @@ func AddCommentCount(ctx context.Context, videoid string) error {
 	}
 
 	_, err = RDB.ZAdd(ctx, CommentKey, videoResp).Result()
-
-	if err != nil {
-		return err
-	}
-
-	err = CreatVideoId(ctx, videoid)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -196,7 +178,7 @@ func ReduceCommentCount(ctx context.Context, videoid string) error {
 
 	score, err := RDB.ZScore(ctx, CommentKey, videoid).Result()
 
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -206,13 +188,7 @@ func ReduceCommentCount(ctx context.Context, videoid string) error {
 	}
 
 	_, err = RDB.ZAdd(ctx, CommentKey, videoResp).Result()
-
-	if err != nil {
-		return err
-	}
-
-	err = CreatVideoId(ctx, videoid)
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -228,7 +204,7 @@ func GetCommentCount(ctx context.Context, videoid string) (int64, error) {
 
 	count, err := RDB.ZScore(ctx, CommentKey, videoid).Result()
 
-	if err != nil {
+	if err != nil && err != redis.Nil {
 
 		if err == redis.Nil {
 			return 0, nil
