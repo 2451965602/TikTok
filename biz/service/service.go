@@ -8,13 +8,13 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 
 	"work4/pkg/upload"
 )
 
 func GetUidFormContext(c *app.RequestContext) int64 {
-	uid, _ := c.Get(env.ContextUid)
+	uid, _ := c.Get(constants.ContextUid)
 	userid, err := convertToInt64(uid)
 	if err != nil {
 		panic(err)

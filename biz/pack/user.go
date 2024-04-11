@@ -10,7 +10,7 @@ func User(data *db.User) *model.User {
 	create := strconv.FormatInt(data.CreatedAt.Unix(), 10)
 	update := strconv.FormatInt(data.UpdatedAt.Unix(), 10)
 	return &model.User{
-		ID:        data.UserId,
+		ID:        strconv.FormatInt(data.UserId, 10),
 		Username:  data.Username,
 		Password:  &data.Password,
 		AvatarURL: data.AvatarUrl,
@@ -63,19 +63,6 @@ func UserInfo(data *db.UserInfoDetail) *model.UserInfo {
 		AvatarURL: data.AvatarUrl,
 		CreatedAt: &createat,
 		UpdatedAt: &updateat,
-	}
-}
-
-func UserList(data []*db.User, total int64) *model.UserList {
-	resp := make([]*model.User, 0, len(data))
-
-	for _, v := range data {
-		resp = append(resp, User(v))
-	}
-
-	return &model.UserList{
-		Items: resp,
-		Total: total,
 	}
 }
 

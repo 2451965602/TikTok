@@ -9,7 +9,7 @@ import (
 	"github.com/pquerna/otp/totp"
 	"image/png"
 	"work4/biz/model/user"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 	"work4/pkg/util"
 
 	"work4/pkg/crypt"
@@ -69,7 +69,7 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 
 	err := DB.
 		WithContext(ctx).
-		Table(env.UserTable).
+		Table(constants.UserTable).
 		Where("username = ?", username).
 		First(&userResp).
 		Error
@@ -91,7 +91,7 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.UserTable).
+		Table(constants.UserTable).
 		Create(&userResp).
 		Error
 
@@ -115,7 +115,7 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, e
 
 	err := DB.
 		WithContext(ctx).
-		Table(env.UserTable).
+		Table(constants.UserTable).
 		Where("username = ?", req.Username).
 		First(&userreq).
 		Error
@@ -160,7 +160,7 @@ func GetInfo(ctx context.Context, id string) (*UserInfoDetail, error) {
 
 	err := DB.
 		WithContext(ctx).
-		Table(env.UserTable).
+		Table(constants.UserTable).
 		Select("user_id,username,avatar_url,created_at,updated_at,deleted_at").
 		Where("user_id = ?", id).
 		First(&userResp).
@@ -183,7 +183,7 @@ func UploadAvatar(ctx context.Context, id, url string) (*User, error) {
 
 	err := DB.
 		WithContext(ctx).
-		Table(env.UserTable).
+		Table(constants.UserTable).
 		Where("user_id = ?", id).
 		Update("avatar_url", url).
 		First(&userResp).
@@ -206,7 +206,7 @@ func MFAGet(ctx context.Context, id string) (*MFA, error) {
 
 	err := DB.
 		WithContext(ctx).
-		Table(env.UserTable).
+		Table(constants.UserTable).
 		Where("user_id = ?", id).
 		First(&userreq).
 		Error
@@ -233,7 +233,7 @@ func MFABind(ctx context.Context, id, secret, code string) error {
 	if totp.Validate(code, secret) {
 		err := DB.
 			WithContext(ctx).
-			Table(env.UserTable).
+			Table(constants.UserTable).
 			Where("user_id = ?", id).
 			Update("opt_secret", secret).
 			Error

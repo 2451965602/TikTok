@@ -11,7 +11,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 )
 
 func IsImage(data *multipart.FileHeader) error {
@@ -77,10 +77,10 @@ func Upload(localFile, filename, userid, origin string) (string, error) {
 	key := fmt.Sprintf("%s/%s/%s", origin, userid, filename)
 
 	putPolicy := storage.PutPolicy{
-		Scope: env.QiNiuBucket,
+		Scope: constants.QiNiuBucket,
 	}
 
-	mac := auth.New(env.QiNiuAccessKey, env.QiNiuSecretKey)
+	mac := auth.New(constants.QiNiuAccessKey, constants.QiNiuSecretKey)
 	upToken := putPolicy.UploadToken(mac)
 
 	cfg := storage.Config{}
@@ -114,6 +114,6 @@ func Upload(localFile, filename, userid, origin string) (string, error) {
 	}
 	fmt.Println("File deleted successfully")
 
-	return storage.MakePublicURL(env.QiNiuDomain, ret.Key), nil
+	return storage.MakePublicURL(constants.QiNiuDomain, ret.Key), nil
 
 }

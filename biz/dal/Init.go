@@ -5,7 +5,10 @@ import (
 	"work4/biz/dal/redis"
 )
 
-func Init() {
+func MysqlInit() {
 	db.Init()
+}
+
+func RedisInit() {
 	redis.Init()
 }

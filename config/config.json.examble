@@ -1,0 +1,22 @@
+{
+	"MySQL": {
+		"UserName": "test",
+		"PassWord": "test123",
+		"Host": "127.0.0.1",
+		"Port": 3306,
+		"Name": "test"
+	},
+	"Redis": {
+		"UserName": "default",
+		"PassWord": "123456",
+		"Host": "127.0.0.1",
+		"Port": 6379,
+		"DB": 0
+	},
+	"QiNiu": {
+		"Bucket": "test",
+		"AccessKey": "123",
+		"SecretKey": "123",
+		"Domain": "https://portal.qiniu.com/"
+	}
+}

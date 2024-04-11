@@ -22,8 +22,7 @@ func NewInteractService(ctx context.Context, c *app.RequestContext) *InteractSer
 func (s *InteractService) Like(req *interact.LikeRequest) error {
 
 	var (
-		err      error
-		parentId string
+		err error
 	)
 
 	if req.VideoID != nil && req.CommentID == nil {
@@ -56,20 +55,20 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 
 	if req.VideoID != nil {
 		if req.ActionType == "1" {
-			err = redis.AddLikeCount(s.ctx, parentId)
+			err = redis.AddLikeCount(s.ctx, *req.VideoID)
 			if err != nil {
 				return err
 			}
 		} else if req.ActionType == "2" {
-			err = redis.ReduceLikeCount(s.ctx, parentId)
+			err = redis.ReduceLikeCount(s.ctx, *req.VideoID)
 			if err != nil {
 				return err
 			}
 		} else {
-			return errors.New("非法操作")
+			return errors.New("参数错误")
 		}
 
-		err = redis.UpdateRank(s.ctx, parentId)
+		err = redis.UpdateIdInRank(s.ctx, *req.VideoID)
 		if err != nil {
 			return err
 		}
@@ -88,9 +87,13 @@ func (s *InteractService) LikeList(req *interact.LikeListRequest) ([]*db.Video, 
 		return nil, -1, err
 	}
 	for _, v := range temp {
-		v.VisitCount, err = redis.GetVisitCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.LikeCount, err = redis.GetLikeCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.CommentCount, err = redis.GetCommentCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+		v.VisitCount = count.VisitCount
+		v.LikeCount = count.LikeCount
+		v.CommentCount = count.CommentCount
 		resp = append(resp, v)
 	}
 	return resp, num, nil
@@ -105,7 +108,7 @@ func (s *InteractService) Comment(req *interact.CommentRequest) error {
 			return err
 		}
 
-		err = redis.UpdateRank(s.ctx, *req.VideoID)
+		err = redis.UpdateIdInRank(s.ctx, *req.VideoID)
 		if err != nil {
 			return err
 		}

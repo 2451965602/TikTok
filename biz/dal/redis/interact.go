@@ -6,12 +6,19 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-var LikeKey = "LikeRank"
+var LikeToIdKey = "VideoLike"
+var CommentToIdKey = "CommentToId"
+
+type Counts struct {
+	VisitCount   int64
+	LikeCount    int64
+	CommentCount int64
+}
 
 func CreatLikeCount(ctx context.Context, videoid string) error {
 
-	if RDB == nil {
-		return errors.New("RDB object is nil")
+	if redisDBVideoId == nil {
+		return errors.New("redisDBVideoId object is nil")
 	}
 
 	videoResp := redis.Z{
@@ -19,7 +26,7 @@ func CreatLikeCount(ctx context.Context, videoid string) error {
 		Member: videoid,
 	}
 
-	_, err := RDB.ZAdd(ctx, LikeKey, videoResp).Result()
+	_, err := redisDBVideoId.ZAdd(ctx, LikeToIdKey, videoResp).Result()
 
 	if err != nil {
 		return err
@@ -31,11 +38,11 @@ func CreatLikeCount(ctx context.Context, videoid string) error {
 
 func AddLikeCount(ctx context.Context, videoid string) error {
 
-	if RDB == nil {
-		return errors.New("RDB object is nil")
+	if redisDBVideoId == nil {
+		return errors.New("redisDBVideoId object is nil")
 	}
 
-	score, err := RDB.ZScore(ctx, LikeKey, videoid).Result()
+	score, err := redisDBVideoId.ZScore(ctx, LikeToIdKey, videoid).Result()
 
 	if err != nil {
 
@@ -55,7 +62,7 @@ func AddLikeCount(ctx context.Context, videoid string) error {
 		Member: videoid,
 	}
 
-	_, err = RDB.ZAdd(ctx, LikeKey, videoResp).Result()
+	_, err = redisDBVideoId.ZAdd(ctx, LikeToIdKey, videoResp).Result()
 	if err != nil {
 		return err
 	}
@@ -66,11 +73,11 @@ func AddLikeCount(ctx context.Context, videoid string) error {
 
 func ReduceLikeCount(ctx context.Context, videoid string) error {
 
-	if RDB == nil {
-		return errors.New("RDB object is nil")
+	if redisDBVideoId == nil {
+		return errors.New("redisDBVideoId object is nil")
 	}
 
-	score, err := RDB.ZScore(ctx, LikeKey, videoid).Result()
+	score, err := redisDBVideoId.ZScore(ctx, LikeToIdKey, videoid).Result()
 
 	if err != nil && err != redis.Nil {
 		return err
@@ -81,7 +88,7 @@ func ReduceLikeCount(ctx context.Context, videoid string) error {
 		Member: videoid,
 	}
 
-	_, err = RDB.ZAdd(ctx, LikeKey, videoResp).Result()
+	_, err = redisDBVideoId.ZAdd(ctx, LikeToIdKey, videoResp).Result()
 	if err != nil && err != redis.Nil {
 		return err
 	}
@@ -90,34 +97,10 @@ func ReduceLikeCount(ctx context.Context, videoid string) error {
 
 }
 
-func GetLikeCount(ctx context.Context, videoid string) (int64, error) {
-
-	if RDB == nil {
-		return -1, errors.New("RDB object is nil")
-	}
-
-	count, err := RDB.ZScore(ctx, LikeKey, videoid).Result()
-
-	if err != nil {
-
-		if err == redis.Nil {
-			return 0, nil
-		} else {
-			return -1, err
-		}
-
-	}
-
-	return int64(count), nil
-
-}
-
-var CommentKey = "CommentRank"
-
 func CreatCommentCount(ctx context.Context, videoid string) error {
 
-	if RDB == nil {
-		return errors.New("RDB object is nil")
+	if redisDBVideoId == nil {
+		return errors.New("redisDBVideoId object is nil")
 	}
 
 	videoResp := redis.Z{
@@ -125,7 +108,7 @@ func CreatCommentCount(ctx context.Context, videoid string) error {
 		Member: videoid,
 	}
 
-	_, err := RDB.ZAdd(ctx, CommentKey, videoResp).Result()
+	_, err := redisDBVideoId.ZAdd(ctx, CommentToIdKey, videoResp).Result()
 
 	if err != nil && err != redis.Nil {
 		return err
@@ -137,11 +120,11 @@ func CreatCommentCount(ctx context.Context, videoid string) error {
 
 func AddCommentCount(ctx context.Context, videoid string) error {
 
-	if RDB == nil {
-		return errors.New("RDB object is nil")
+	if redisDBVideoId == nil {
+		return errors.New("redisDBVideoId object is nil")
 	}
 
-	score, err := RDB.ZScore(ctx, CommentKey, videoid).Result()
+	score, err := redisDBVideoId.ZScore(ctx, CommentToIdKey, videoid).Result()
 
 	if err != nil {
 
@@ -161,7 +144,7 @@ func AddCommentCount(ctx context.Context, videoid string) error {
 		Member: videoid,
 	}
 
-	_, err = RDB.ZAdd(ctx, CommentKey, videoResp).Result()
+	_, err = redisDBVideoId.ZAdd(ctx, CommentToIdKey, videoResp).Result()
 	if err != nil && err != redis.Nil {
 		return err
 	}
@@ -172,11 +155,11 @@ func AddCommentCount(ctx context.Context, videoid string) error {
 
 func ReduceCommentCount(ctx context.Context, videoid string) error {
 
-	if RDB == nil {
-		return errors.New("RDB object is nil")
+	if redisDBVideoId == nil {
+		return errors.New("redisDBVideoId object is nil")
 	}
 
-	score, err := RDB.ZScore(ctx, CommentKey, videoid).Result()
+	score, err := redisDBVideoId.ZScore(ctx, CommentToIdKey, videoid).Result()
 
 	if err != nil && err != redis.Nil {
 		return err
@@ -187,7 +170,7 @@ func ReduceCommentCount(ctx context.Context, videoid string) error {
 		Member: videoid,
 	}
 
-	_, err = RDB.ZAdd(ctx, CommentKey, videoResp).Result()
+	_, err = redisDBVideoId.ZAdd(ctx, CommentToIdKey, videoResp).Result()
 	if err != nil && err != redis.Nil {
 		return err
 	}
@@ -196,24 +179,40 @@ func ReduceCommentCount(ctx context.Context, videoid string) error {
 
 }
 
-func GetCommentCount(ctx context.Context, videoid string) (int64, error) {
-
-	if RDB == nil {
-		return -1, errors.New("RDB object is nil")
+func GetCounts(ctx context.Context, videoId string) (Counts, error) {
+	if redisDBVideoId == nil {
+		return Counts{}, errors.New("redisDBVideoId object is nil")
 	}
 
-	count, err := RDB.ZScore(ctx, CommentKey, videoid).Result()
+	pipe := redisDBVideoId.Pipeline()
 
+	visitCmd := pipe.ZScore(ctx, VideoIdKey, videoId)
+	likeCmd := pipe.ZScore(ctx, LikeToIdKey, videoId)
+	commentCmd := pipe.ZScore(ctx, CommentToIdKey, videoId)
+
+	_, err := pipe.Exec(ctx)
 	if err != nil && err != redis.Nil {
-
-		if err == redis.Nil {
-			return 0, nil
-		} else {
-			return -1, err
-		}
-
+		return Counts{}, err
 	}
 
-	return int64(count), nil
+	visitCount, visitErr := visitCmd.Result()
+	if visitErr != nil && visitErr != redis.Nil {
+		return Counts{}, visitErr
+	}
 
+	likeCount, likeErr := likeCmd.Result()
+	if likeErr != nil && likeErr != redis.Nil {
+		return Counts{}, likeErr
+	}
+
+	commentCount, commentErr := commentCmd.Result()
+	if commentErr != nil && commentErr != redis.Nil {
+		return Counts{}, commentErr
+	}
+
+	return Counts{
+		VisitCount:   int64(visitCount),
+		LikeCount:    int64(likeCount),
+		CommentCount: int64(commentCount),
+	}, nil
 }

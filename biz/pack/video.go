@@ -8,7 +8,7 @@ import (
 
 func Video(data *db.Video) *model.Video {
 	return &model.Video{
-		ID:           data.VideoId,
+		ID:           strconv.FormatInt(data.VideoId, 10),
 		UserID:       data.UserId,
 		VideoURL:     data.VideoUrl,
 		CoverURL:     data.CoverUrl,

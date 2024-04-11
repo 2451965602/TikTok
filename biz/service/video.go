@@ -25,14 +25,18 @@ func (s *VideoService) Feed(req *video.FeedRequest) ([]*db.Video, int64, error) 
 	var resp []*db.Video
 
 	temp, num, err := db.Feed(s.ctx, req)
-
 	if err != nil {
 		return nil, -1, err
 	}
+
 	for _, v := range temp {
-		v.VisitCount, err = redis.GetVisitCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.LikeCount, err = redis.GetLikeCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.CommentCount, err = redis.GetCommentCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+		v.VisitCount = count.VisitCount
+		v.LikeCount = count.LikeCount
+		v.CommentCount = count.CommentCount
 		resp = append(resp, v)
 	}
 
@@ -65,7 +69,7 @@ func (s *VideoService) UploadVideo(videodata *multipart.FileHeader, coverdata *m
 
 	videoId, err := db.UploadVideo(s.ctx, userid, videoUrl, coverUrl, req.Title, req.Description)
 
-	err = redis.AddRank(s.ctx, strconv.FormatInt(videoId, 10))
+	err = redis.AddIdToRank(s.ctx, strconv.FormatInt(videoId, 10))
 	if err != nil {
 		return err
 	}
@@ -83,37 +87,66 @@ func (s *VideoService) UploadList(req *video.UploadListRequest) ([]*db.Video, in
 		return nil, -1, err
 	}
 	for _, v := range temp {
-		v.VisitCount, err = redis.GetVisitCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.LikeCount, err = redis.GetLikeCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.CommentCount, err = redis.GetCommentCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+		v.VisitCount = count.VisitCount
+		v.LikeCount = count.LikeCount
+		v.CommentCount = count.CommentCount
 		resp = append(resp, v)
 	}
 
 	return resp, num, err
 }
 
-func (s *VideoService) Rank(req *video.RankRequest) ([]*db.Video, int64, error) {
+func (s *VideoService) Rank(req *video.RankRequest) ([]*db.Video, error) {
 
-	var resp []*db.Video
-
-	rank, err := redis.RankList(s.ctx)
+	resp, err := redis.RankList(s.ctx)
 	if err != nil {
-		return nil, -1, err
+		return nil, err
 	}
 
-	temp, num, err := db.Rank(s.ctx, req.PageNum, req.PageSize, rank)
-	if err != nil {
-		return nil, -1, err
+	if resp == nil {
+
+		rank, err := redis.IdRankList(s.ctx)
+		if err != nil {
+			return nil, err
+		}
+		temp, err := db.Rank(s.ctx, rank)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, v := range temp {
+			count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
+			if err != nil {
+				return nil, err
+			}
+			v.VisitCount = count.VisitCount
+			v.LikeCount = count.LikeCount
+			v.CommentCount = count.CommentCount
+			resp = append(resp, v)
+		}
+
+		err = redis.AddToRank(s.ctx, resp)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	for _, v := range temp {
-		v.VisitCount, err = redis.GetVisitCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.LikeCount, err = redis.GetLikeCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.CommentCount, err = redis.GetCommentCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		resp = append(resp, v)
+	startIndex := (req.PageNum - 1) * req.PageSize
+	endIndex := startIndex + req.PageSize
+
+	if startIndex >= int64(len(resp)) {
+		return []*db.Video{}, nil
 	}
 
-	return resp, num, err
+	if endIndex > int64(len(resp)) {
+		endIndex = int64(len(resp))
+	}
+
+	return resp[startIndex:endIndex], err
 
 }
 
@@ -127,9 +160,13 @@ func (s *VideoService) Query(req *video.QueryRequest) ([]*db.Video, int64, error
 		return nil, -1, err
 	}
 	for _, v := range temp {
-		v.VisitCount, err = redis.GetVisitCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.LikeCount, err = redis.GetLikeCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
-		v.CommentCount, err = redis.GetCommentCount(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
+		if err != nil {
+			return nil, -1, err
+		}
+		v.VisitCount = count.VisitCount
+		v.LikeCount = count.LikeCount
+		v.CommentCount = count.CommentCount
 		resp = append(resp, v)
 	}
 

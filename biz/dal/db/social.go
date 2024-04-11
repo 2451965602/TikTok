@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 )
 
 /*
@@ -32,7 +32,7 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid string, to i
 	)
 	err := DB.
 		WithContext(ctx).
-		Table(env.SocialTable).
+		Table(constants.SocialTable).
 		Where("user_id = ?", bigid).
 		First(&social).
 		Error
@@ -47,7 +47,7 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid string, to i
 			}
 			err = DB.
 				WithContext(ctx).
-				Table(env.SocialTable).
+				Table(constants.SocialTable).
 				Create(&Social{
 					UserId:   bigid,
 					ToUserId: smallid,
@@ -62,7 +62,7 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid string, to i
 	// 更新已有的关注记录
 	err = DB.
 		WithContext(ctx).
-		Table(env.SocialTable).
+		Table(constants.SocialTable).
 		Where("user_id = ?", bigid).
 		Update("Status", 0).
 		Error
@@ -82,7 +82,7 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 		var social Social
 		err = DB.
 			WithContext(ctx).
-			Table(env.SocialTable).
+			Table(constants.SocialTable).
 			Where("user_id = ?", bigid).
 			First(&social).
 			Error
@@ -97,7 +97,7 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 				// 更新状态为取消关注
 				err = DB.
 					WithContext(ctx).
-					Table(env.SocialTable).
+					Table(constants.SocialTable).
 					Where("user_id = ?", bigid).
 					Update("Status", 2).
 					Error
@@ -105,7 +105,7 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 				// 删除关注记录
 				err = DB.
 					WithContext(ctx).
-					Table(env.SocialTable).
+					Table(constants.SocialTable).
 					Where("user_id = ?", bigid).
 					Update("Status", 1).
 					Error
@@ -113,7 +113,7 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 		} else {
 			err = DB.
 				WithContext(ctx).
-				Table(env.SocialTable).
+				Table(constants.SocialTable).
 				Where("user_id = ?", bigid).
 				Delete(&social).
 				Error
@@ -135,7 +135,7 @@ func StarUserList(ctx context.Context, userid string, pagenum, pagesize int64) (
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.SocialTable).
+		Table(constants.SocialTable).
 		Where(&Social{UserId: userid, Status: 1}).
 		Or(&Social{ToUserId: userid, Status: 2}).
 		Or(&Social{UserId: userid, Status: 0}).
@@ -165,7 +165,7 @@ func FanUserList(ctx context.Context, userid string, pagenum, pagesize int64) ([
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.SocialTable).
+		Table(constants.SocialTable).
 		Where("to_user_id=?", userid).
 		Limit(int(pagesize)).
 		Offset(int((pagenum - 1) * pagesize)).
@@ -192,7 +192,7 @@ func FriendUser(ctx context.Context, userid string, pagenum, pagesize int64) ([]
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.SocialTable).
+		Table(constants.SocialTable).
 		Where("user_id = ?", userid).Or("to_user_id = ?", userid).
 		Where("status = ?", 0).
 		Limit(int(pagesize)).

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 )
 
 func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) (err error) {
@@ -36,10 +36,10 @@ func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) 
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.LikeTable).
+			Table(constants.LikeTable).
+			Where("user_id=?", userid).
 			Where("root_id=?", id).
 			Or("video_id=?", id).
-			Or("user_id=?", userid).
 			First(&LikeResp).
 			Error
 
@@ -49,7 +49,7 @@ func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) 
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.LikeTable).
+			Table(constants.LikeTable).
 			Create(&LikeResp).
 			Error
 
@@ -57,14 +57,14 @@ func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) 
 			return err
 		}
 
-	} else {
+	} else if actiontype == "2" {
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.LikeTable).
+			Table(constants.LikeTable).
+			Where("user_id=?", userid).
 			Where("root_id=?", id).
 			Or("video_id=?", id).
-			Or("user_id=?", userid).
 			First(&LikeResp).
 			Error
 
@@ -74,16 +74,18 @@ func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) 
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.LikeTable).
+			Table(constants.LikeTable).
+			Where("user_id=?", userid).
 			Where("root_id=?", id).
 			Or("video_id=?", id).
-			Or("user_id=?", userid).
 			Delete(&LikeResp).
 			Error
 
 		if err != nil {
 			return err
 		}
+	} else {
+		return errors.New("参数错误")
 	}
 
 	return nil
@@ -103,7 +105,7 @@ func LikeList(ctx context.Context, userid string, pagenum, pagesize int64) ([]*V
 	// 获取同一个user_id下所有的video_id
 	err = DB.
 		WithContext(ctx).
-		Table(env.LikeTable).
+		Table(constants.LikeTable).
 		Where("user_id = ?", userid).
 		Select("video_id").
 		Find(&videoid).
@@ -115,7 +117,7 @@ func LikeList(ctx context.Context, userid string, pagenum, pagesize int64) ([]*V
 
 	// 查询video表中与likeIDs匹配的视频信息
 	err = DB.
-		Table(env.VideoTable).
+		Table(constants.VideoTable).
 		Where("`video_id` IN (?)", videoid).
 		Limit(int(pagesize)).
 		Offset(int((pagenum - 1) * pagesize)).
@@ -158,7 +160,7 @@ func CreatComment(ctx context.Context, userid, id, content, sort string) error {
 
 	err := DB.
 		WithContext(ctx).
-		Table(env.CommentTable).
+		Table(constants.CommentTable).
 		Create(&CommentResp).
 		Error
 
@@ -181,7 +183,7 @@ func CommentList(ctx context.Context, videoid string, pagenum, pagesize int64) (
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.CommentTable).
+		Table(constants.CommentTable).
 		Where("video_id=?", videoid).
 		Limit(int(pagesize)).
 		Offset(int((pagenum - 1) * pagesize)).
@@ -206,7 +208,7 @@ func DeleteComment(ctx context.Context, userid string, commentid int64) (videoid
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.CommentTable).
+		Table(constants.CommentTable).
 		Where("comment_id=?", commentid).
 		Select("video_id").
 		First(&commentInfo).
@@ -218,7 +220,7 @@ func DeleteComment(ctx context.Context, userid string, commentid int64) (videoid
 
 	err = DB.
 		WithContext(ctx).
-		Table(env.CommentTable).
+		Table(constants.CommentTable).
 		Where("comment_id = ?", commentid).
 		Delete(&Comment{
 			CommentId: commentid,

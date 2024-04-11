@@ -88,7 +88,7 @@ func Rank(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(video.RankResponse)
 
-	videoResp, count, err := service.NewVideoService(ctx, c).Rank(&req)
+	videoResp, err := service.NewVideoService(ctx, c).Rank(&req)
 
 	if err != nil {
 		pack.SendFailResponse(c, err)
@@ -96,7 +96,7 @@ func Rank(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp.Base = pack.BuildBaseResp(nil)
-	resp.Data = pack.VideoList(videoResp, count)
+	resp.Data = pack.VideoList(videoResp, 100)
 
 	pack.SendResponse(c, resp, consts.StatusOK)
 }
