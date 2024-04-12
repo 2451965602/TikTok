@@ -2,10 +2,10 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"work4/biz/middleware"
 	"work4/biz/pack"
+	"work4/pkg/errmsg"
 )
 
 func Auth() []app.HandlerFunc {
@@ -18,11 +18,11 @@ func DoubleTokenAuthFunc() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		if !middleware.IsAccessTokenAvailable(ctx, c) {
 			if !middleware.IsRefreshTokenAvailable(ctx, c) {
-				pack.SendFailResponse(c, errors.New("TokenIsInavailableError"))
+				pack.BuildFailResponse(c, errmsg.AuthError)
 				c.Abort()
 				return
 			}
-			middleware.GenerateAccessToken(ctx, c)
+			middleware.GenerateAccessToken(c)
 		}
 
 		c.Next(ctx)

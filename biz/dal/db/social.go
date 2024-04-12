@@ -5,6 +5,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 )
 
 /*
@@ -25,7 +26,7 @@ to
 */
 
 // createOrUpdateFollowRecord 创建或更新关注记录
-func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid string, to int64) error {
+func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid, to int64) error {
 	var (
 		social Social
 		status int64
@@ -54,9 +55,13 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid string, to i
 					Status:   status,
 				}).
 				Error
-			return err
+			if err != nil {
+				return errmsg.DatabaseError
+			}
+
+			return nil
 		}
-		return err
+		return errmsg.DatabaseError
 	}
 
 	// 更新已有的关注记录
@@ -66,15 +71,12 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid string, to i
 		Where("user_id = ?", bigid).
 		Update("Status", 0).
 		Error
-	return err
+	return errmsg.DatabaseError
 }
 
 // StarUser 关注或取消关注用户
-func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) (err error) {
-	// 检查数据库对象是否为空
-	if DB == nil {
-		return errors.New("DB 对象为空")
-	}
+func StarUser(ctx context.Context, bigid, smallid, actiontype, to int64) (err error) {
+
 	// 关注操作
 	if actiontype == 0 {
 		err = createOrUpdateFollowRecord(ctx, bigid, smallid, to)
@@ -88,11 +90,12 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 			Error
 
 		if err != nil {
-			return err
+			return errmsg.DatabaseError
 		}
 
 		// 如果是互相关注状态
 		if social.Status == 0 {
+
 			if to == 1 {
 				// 更新状态为取消关注
 				err = DB.
@@ -110,6 +113,11 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 					Update("Status", 1).
 					Error
 			}
+
+			if err != nil {
+				return errmsg.DatabaseError
+			}
+
 		} else {
 			err = DB.
 				WithContext(ctx).
@@ -117,17 +125,17 @@ func StarUser(ctx context.Context, bigid, smallid string, actiontype, to int64) 
 				Where("user_id = ?", bigid).
 				Delete(&social).
 				Error
+
+			if err != nil {
+				return errmsg.DatabaseError
+			}
 		}
 	}
 
-	return err
+	return nil
 }
 
-func StarUserList(ctx context.Context, userid string, pagenum, pagesize int64) ([]*UserInfo, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
+func StarUserList(ctx context.Context, userid, pagenum, pagesize int64) ([]*UserInfo, int64, error) {
 
 	var StarResp []*UserInfo
 	var err error
@@ -147,17 +155,13 @@ func StarUserList(ctx context.Context, userid string, pagenum, pagesize int64) (
 		Error
 
 	if err != nil {
-		return nil, -1, err
+		return nil, -1, errmsg.DatabaseError
 	}
 
 	return StarResp, count, nil
 }
 
 func FanUserList(ctx context.Context, userid string, pagenum, pagesize int64) ([]*UserInfo, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
 
 	var StarResp []*UserInfo
 	var err error
@@ -174,16 +178,12 @@ func FanUserList(ctx context.Context, userid string, pagenum, pagesize int64) ([
 		Error
 
 	if err != nil {
-		return nil, -1, err
+		return nil, -1, errmsg.DatabaseError
 	}
 	return StarResp, count, nil
 }
 
 func FriendUser(ctx context.Context, userid string, pagenum, pagesize int64) ([]*UserInfo, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
 
 	var StarResp []*UserInfo
 	var userId []*string
@@ -202,7 +202,7 @@ func FriendUser(ctx context.Context, userid string, pagenum, pagesize int64) ([]
 		Error
 
 	if err != nil {
-		return nil, -1, err
+		return nil, -1, errmsg.DatabaseError
 	}
 
 	return StarResp, count, nil

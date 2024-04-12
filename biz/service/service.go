@@ -10,7 +10,7 @@ import (
 	"strings"
 	"work4/pkg/constants"
 
-	"work4/pkg/upload"
+	"work4/pkg/oss"
 )
 
 func GetUidFormContext(c *app.RequestContext) int64 {
@@ -45,11 +45,11 @@ func UploadAndGetUrl(data *multipart.FileHeader, userid, sort string) (string, e
 	fileName := uuid.NewV4().String() + ext
 	storePath := filepath.Join("static", userid, sort)
 
-	if err := upload.SaveFile(data, storePath, fileName); err != nil {
+	if err := oss.SaveFile(data, storePath, fileName); err != nil {
 		return "", err
 	}
 
-	url, err := upload.Upload(filepath.Join(storePath, fileName), fileName, userid, sort)
+	url, err := oss.Upload(filepath.Join(storePath, fileName), fileName, userid, sort)
 
 	if err != nil {
 		return "", err

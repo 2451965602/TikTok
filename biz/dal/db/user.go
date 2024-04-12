@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"errors"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"image/png"
 	"work4/biz/model/user"
 	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 	"work4/pkg/util"
 
 	"work4/pkg/crypt"
@@ -25,33 +25,32 @@ func OptSecret(user *User) (*MFA, error) {
 			AccountName: user.Username,
 		})
 		if err != nil {
-			return nil, err
+			return nil, errmsg.MfaGenareteError
 		}
 
 		user.OptSecret = key.String()
-
 	}
 
 	key, err := otp.NewKeyFromURL(user.OptSecret)
 	if err != nil {
-		return nil, err
+		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
 	}
 
 	img, err := key.Image(200, 200)
 	if err != nil {
-		return nil, err
+		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
 	}
 
 	err = png.Encode(&buf, img)
 	if err != nil {
-		return nil, err
+		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
 	}
 
 	qrcode := base64.StdEncoding.EncodeToString(buf.Bytes())
 
 	secret, err := util.ExtractSecretFromTOTPURL(user.OptSecret)
 	if err != nil {
-		return nil, err
+		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
 	}
 
 	MFAResp.Secret = secret
@@ -61,27 +60,22 @@ func OptSecret(user *User) (*MFA, error) {
 }
 
 func CreateUser(ctx context.Context, username, password string) (*User, error) {
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
 
 	var userResp *User
 
-	err := DB.
-		WithContext(ctx).
-		Table(constants.UserTable).
-		Where("username = ?", username).
-		First(&userResp).
-		Error
+	exist, err := IsUserNameExist(ctx, username)
 
-	if err == nil {
-		return nil, errors.New("用户名已存在")
+	if exist {
+		return nil, errmsg.UserExistError
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	pwd, err := crypt.PasswordHash(password)
 
 	if err != nil {
-		return nil, err
+		return nil, errmsg.CryptEncodeError
 	}
 
 	userResp = &User{
@@ -96,7 +90,7 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 		Error
 
 	if err != nil {
-		return nil, err
+		return nil, errmsg.DatabaseError
 	}
 
 	userResp.Password = password
@@ -105,10 +99,6 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 }
 
 func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, error) {
-
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
 
 	var userreq *User
 	var userResp *UserInfoDetail
@@ -121,22 +111,20 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, e
 		Error
 
 	if err != nil {
-		return nil, errors.New("账号或密码错误")
+		return nil, errmsg.AuthError.WithMessage("Incorrect account number or password")
 	}
 
 	if !crypt.PasswordVerify(req.Password, userreq.Password) {
-		return nil, errors.New("账号或密码错误")
+		return nil, errmsg.AuthError.WithMessage("Incorrect account number or password")
 	}
 
 	if userreq.OptSecret != "" {
 		if req.Code == nil {
-			// OTP 已启用，但未提供 OTP 代码
-			return nil, errors.New("未提供 OTP 代码")
+			return nil, errmsg.MfaOptCodeError.WithMessage("OTP code not provided")
 		}
 		value := *req.Code
 		if !totp.Validate(value, userreq.OptSecret) {
-			// OTP 验证失败
-			return nil, errors.New("OTP 一次性密码错误")
+			return nil, errmsg.MfaOptCodeError
 		}
 	}
 
@@ -152,10 +140,6 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, e
 
 func GetInfo(ctx context.Context, id string) (*UserInfoDetail, error) {
 
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
-
 	var userResp *UserInfoDetail
 
 	err := DB.
@@ -167,17 +151,13 @@ func GetInfo(ctx context.Context, id string) (*UserInfoDetail, error) {
 		Error
 
 	if err != nil {
-		return nil, errors.New("用户不存在")
+		return nil, errmsg.UserNotExistError
 	}
 
 	return userResp, nil
 }
 
 func UploadAvatar(ctx context.Context, id, url string) (*User, error) {
-
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
 
 	var userResp *User
 
@@ -190,17 +170,13 @@ func UploadAvatar(ctx context.Context, id, url string) (*User, error) {
 		Error
 
 	if err != nil {
-		return nil, err
+		return nil, errmsg.DatabaseError
 	}
 
 	return userResp, nil
 }
 
 func MFAGet(ctx context.Context, id string) (*MFA, error) {
-
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
 
 	var userreq *User
 
@@ -212,23 +188,18 @@ func MFAGet(ctx context.Context, id string) (*MFA, error) {
 		Error
 
 	if err != nil {
-		return nil, err
+		return nil, errmsg.DatabaseError
 	}
 
 	MFAResp, err := OptSecret(userreq)
-
 	if err != nil {
 		return nil, err
 	}
 
-	return MFAResp, err
+	return MFAResp, nil
 }
 
 func MFABind(ctx context.Context, id, secret, code string) error {
-
-	if DB == nil {
-		return errors.New("DB object is nil")
-	}
 
 	if totp.Validate(code, secret) {
 		err := DB.
@@ -239,11 +210,11 @@ func MFABind(ctx context.Context, id, secret, code string) error {
 			Error
 
 		if err != nil {
-			return err
+			return errmsg.DatabaseError
 		}
 
 		return nil
 	}
 
-	return errors.New("OTP 一次性密码错误")
+	return errmsg.MfaOptCodeError
 }

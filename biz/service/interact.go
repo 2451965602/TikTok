@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
-	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"strconv"
 	"work4/biz/dal/db"
 	"work4/biz/dal/redis"
 	"work4/biz/model/interact"
+	"work4/pkg/errmsg"
 )
 
 type InteractService struct {
@@ -29,7 +29,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 
 		VideoID, err := strconv.ParseInt(*req.VideoID, 10, 64)
 		if err != nil {
-			return err
+			return errmsg.ParseError
 		}
 
 		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), VideoID, req.ActionType, "video")
@@ -41,7 +41,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 
 		CommentID, err := strconv.ParseInt(*req.CommentID, 10, 64)
 		if err != nil {
-			return err
+			return errmsg.ParseError
 		}
 
 		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), CommentID, req.ActionType, "comment")
@@ -50,7 +50,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 		}
 
 	} else {
-		return errors.New("不可同时对视频与评论进行点赞")
+		return errmsg.DuplicationError.WithMessage("No liking of videos and comments at the same time")
 	}
 
 	if req.VideoID != nil {
@@ -65,7 +65,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 				return err
 			}
 		} else {
-			return errors.New("参数错误")
+			return errmsg.ServiceError.WithMessage("parametric error")
 		}
 
 		err = redis.UpdateIdInRank(s.ctx, *req.VideoID)
@@ -82,10 +82,10 @@ func (s *InteractService) LikeList(req *interact.LikeListRequest) ([]*db.Video, 
 	var resp []*db.Video
 
 	temp, num, err := db.LikeList(s.ctx, req.UserID, req.PageNum, req.PageSize)
-
 	if err != nil {
 		return nil, -1, err
 	}
+
 	for _, v := range temp {
 		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
 		if err != nil {
@@ -109,10 +109,6 @@ func (s *InteractService) Comment(req *interact.CommentRequest) error {
 		}
 
 		err = redis.UpdateIdInRank(s.ctx, *req.VideoID)
-		if err != nil {
-			return err
-		}
-
 		err = redis.AddCommentCount(s.ctx, *req.VideoID)
 		if err != nil {
 			return err
@@ -126,7 +122,7 @@ func (s *InteractService) Comment(req *interact.CommentRequest) error {
 		}
 
 	} else {
-		return errors.New("不可同时对视频与评论进行评论")
+		return errmsg.DuplicationError.WithMessage("No liking of videos and comments at the same time")
 	}
 
 	return nil
@@ -139,16 +135,12 @@ func (s *InteractService) CommentList(req *interact.CommentListRequest) ([]*db.C
 func (s *InteractService) DeleteComment(req *interact.DeleteCommentRequest) error {
 
 	commentid, err := strconv.ParseInt(req.CommentID, 10, 64)
-	if err != nil {
-		return err
-	}
-
 	videoid, err := db.DeleteComment(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), commentid)
 	if err != nil {
-		return err
+		return errmsg.ParseError
 	}
 
-	err = redis.ReduceCommentCount(s.ctx, strconv.FormatInt(videoid, 10))
+	err = redis.ReduceCommentCount(s.ctx, videoid)
 	if err != nil {
 		return err
 	}

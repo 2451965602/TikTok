@@ -8,7 +8,8 @@ import (
 	"work4/biz/dal/db"
 	"work4/biz/dal/redis"
 	"work4/biz/model/video"
-	"work4/pkg/upload"
+	"work4/pkg/errmsg"
+	"work4/pkg/oss"
 )
 
 type VideoService struct {
@@ -34,6 +35,7 @@ func (s *VideoService) Feed(req *video.FeedRequest) ([]*db.Video, int64, error) 
 		if err != nil {
 			return nil, -1, err
 		}
+
 		v.VisitCount = count.VisitCount
 		v.LikeCount = count.LikeCount
 		v.CommentCount = count.CommentCount
@@ -47,12 +49,12 @@ func (s *VideoService) UploadVideo(videodata *multipart.FileHeader, coverdata *m
 
 	userid := strconv.FormatInt(GetUidFormContext(s.c), 10)
 
-	err := upload.IsVideo(videodata)
+	err := oss.IsVideo(videodata)
 	if err != nil {
 		return err
 	}
 
-	err = upload.IsImage(coverdata)
+	err = oss.IsImage(coverdata)
 	if err != nil {
 		return err
 	}
@@ -81,16 +83,22 @@ func (s *VideoService) UploadList(req *video.UploadListRequest) ([]*db.Video, in
 
 	var resp []*db.Video
 
-	temp, num, err := db.UploadList(s.ctx, req.PageNum, req.PageSize, req.UserID)
+	userid, err := strconv.ParseInt(req.UserID, 10, 64)
+	if err != nil {
+		return nil, -1, errmsg.ParseError
+	}
 
+	temp, num, err := db.UploadList(s.ctx, req.PageNum, req.PageSize, userid)
 	if err != nil {
 		return nil, -1, err
 	}
+
 	for _, v := range temp {
 		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
 		if err != nil {
 			return nil, -1, err
 		}
+
 		v.VisitCount = count.VisitCount
 		v.LikeCount = count.LikeCount
 		v.CommentCount = count.CommentCount
@@ -123,6 +131,7 @@ func (s *VideoService) Rank(req *video.RankRequest) ([]*db.Video, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			v.VisitCount = count.VisitCount
 			v.LikeCount = count.LikeCount
 			v.CommentCount = count.CommentCount
@@ -146,7 +155,7 @@ func (s *VideoService) Rank(req *video.RankRequest) ([]*db.Video, error) {
 		endIndex = int64(len(resp))
 	}
 
-	return resp[startIndex:endIndex], err
+	return resp[startIndex:endIndex], nil
 
 }
 
@@ -155,15 +164,16 @@ func (s *VideoService) Query(req *video.QueryRequest) ([]*db.Video, int64, error
 	var resp []*db.Video
 
 	temp, num, err := db.Query(s.ctx, req)
-
 	if err != nil {
 		return nil, -1, err
 	}
+
 	for _, v := range temp {
 		count, err := redis.GetCounts(s.ctx, strconv.FormatInt(v.VideoId, 10))
 		if err != nil {
 			return nil, -1, err
 		}
+
 		v.VisitCount = count.VisitCount
 		v.LikeCount = count.LikeCount
 		v.CommentCount = count.CommentCount

@@ -6,9 +6,9 @@ import (
 	"context"
 	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"work4/biz/model/interact"
 )
 
@@ -19,7 +19,7 @@ func Like(ctx context.Context, c *app.RequestContext) {
 	var req interact.LikeRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -28,13 +28,13 @@ func Like(ctx context.Context, c *app.RequestContext) {
 	err = service.NewInteractService(ctx, c).Like(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // LikeList .
@@ -44,7 +44,7 @@ func LikeList(ctx context.Context, c *app.RequestContext) {
 	var req interact.LikeListRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -53,14 +53,14 @@ func LikeList(ctx context.Context, c *app.RequestContext) {
 	interactResp, count, err := service.NewInteractService(ctx, c).LikeList(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.LikeList(interactResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Comment .
@@ -70,7 +70,7 @@ func Comment(ctx context.Context, c *app.RequestContext) {
 	var req interact.CommentRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -79,13 +79,13 @@ func Comment(ctx context.Context, c *app.RequestContext) {
 	err = service.NewInteractService(ctx, c).Comment(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // CommentList .
@@ -95,7 +95,7 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 	var req interact.CommentListRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -104,14 +104,14 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 	interactResp, count, err := service.NewInteractService(ctx, c).CommentList(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.CommentList(interactResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // DeleteComment .
@@ -121,7 +121,7 @@ func DeleteComment(ctx context.Context, c *app.RequestContext) {
 	var req interact.DeleteCommentRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -130,11 +130,11 @@ func DeleteComment(ctx context.Context, c *app.RequestContext) {
 	err = service.NewInteractService(ctx, c).DeleteComment(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }

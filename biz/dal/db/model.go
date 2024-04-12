@@ -65,8 +65,8 @@ type MFA struct {
 }
 
 type Social struct {
-	UserId   string
-	ToUserId string
+	UserId   int64
+	ToUserId int64
 	Status   int64
 }
 

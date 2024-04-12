@@ -2,8 +2,8 @@ package redis
 
 import (
 	"context"
-	"errors"
 	"github.com/redis/go-redis/v9"
+	"work4/pkg/errmsg"
 )
 
 var LikeToIdKey = "VideoLike"
@@ -17,10 +17,6 @@ type Counts struct {
 
 func CreatLikeCount(ctx context.Context, videoid string) error {
 
-	if redisDBVideoId == nil {
-		return errors.New("redisDBVideoId object is nil")
-	}
-
 	videoResp := redis.Z{
 		Score:  0,
 		Member: videoid,
@@ -29,7 +25,7 @@ func CreatLikeCount(ctx context.Context, videoid string) error {
 	_, err := redisDBVideoId.ZAdd(ctx, LikeToIdKey, videoResp).Result()
 
 	if err != nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	return nil
@@ -38,23 +34,17 @@ func CreatLikeCount(ctx context.Context, videoid string) error {
 
 func AddLikeCount(ctx context.Context, videoid string) error {
 
-	if redisDBVideoId == nil {
-		return errors.New("redisDBVideoId object is nil")
-	}
-
 	score, err := redisDBVideoId.ZScore(ctx, LikeToIdKey, videoid).Result()
 
 	if err != nil {
-
 		if err == redis.Nil {
 			err = CreatLikeCount(ctx, videoid)
 			if err != nil && err != redis.Nil {
-				return err
+				return errmsg.RedisError.WithMessage(err.Error())
 			}
 		} else {
-			return err
+			return errmsg.RedisError.WithMessage(err.Error())
 		}
-
 	}
 
 	videoResp := redis.Z{
@@ -64,7 +54,7 @@ func AddLikeCount(ctx context.Context, videoid string) error {
 
 	_, err = redisDBVideoId.ZAdd(ctx, LikeToIdKey, videoResp).Result()
 	if err != nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	return nil
@@ -73,14 +63,10 @@ func AddLikeCount(ctx context.Context, videoid string) error {
 
 func ReduceLikeCount(ctx context.Context, videoid string) error {
 
-	if redisDBVideoId == nil {
-		return errors.New("redisDBVideoId object is nil")
-	}
-
 	score, err := redisDBVideoId.ZScore(ctx, LikeToIdKey, videoid).Result()
 
 	if err != nil && err != redis.Nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	videoResp := redis.Z{
@@ -90,7 +76,7 @@ func ReduceLikeCount(ctx context.Context, videoid string) error {
 
 	_, err = redisDBVideoId.ZAdd(ctx, LikeToIdKey, videoResp).Result()
 	if err != nil && err != redis.Nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	return nil
@@ -98,10 +84,6 @@ func ReduceLikeCount(ctx context.Context, videoid string) error {
 }
 
 func CreatCommentCount(ctx context.Context, videoid string) error {
-
-	if redisDBVideoId == nil {
-		return errors.New("redisDBVideoId object is nil")
-	}
 
 	videoResp := redis.Z{
 		Score:  0,
@@ -111,7 +93,7 @@ func CreatCommentCount(ctx context.Context, videoid string) error {
 	_, err := redisDBVideoId.ZAdd(ctx, CommentToIdKey, videoResp).Result()
 
 	if err != nil && err != redis.Nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	return nil
@@ -120,10 +102,6 @@ func CreatCommentCount(ctx context.Context, videoid string) error {
 
 func AddCommentCount(ctx context.Context, videoid string) error {
 
-	if redisDBVideoId == nil {
-		return errors.New("redisDBVideoId object is nil")
-	}
-
 	score, err := redisDBVideoId.ZScore(ctx, CommentToIdKey, videoid).Result()
 
 	if err != nil {
@@ -131,10 +109,10 @@ func AddCommentCount(ctx context.Context, videoid string) error {
 		if err == redis.Nil {
 			err = CreatCommentCount(ctx, videoid)
 			if err != nil {
-				return err
+				return errmsg.RedisError.WithMessage(err.Error())
 			}
 		} else {
-			return err
+			return errmsg.RedisError.WithMessage(err.Error())
 		}
 
 	}
@@ -146,7 +124,7 @@ func AddCommentCount(ctx context.Context, videoid string) error {
 
 	_, err = redisDBVideoId.ZAdd(ctx, CommentToIdKey, videoResp).Result()
 	if err != nil && err != redis.Nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	return nil
@@ -155,14 +133,10 @@ func AddCommentCount(ctx context.Context, videoid string) error {
 
 func ReduceCommentCount(ctx context.Context, videoid string) error {
 
-	if redisDBVideoId == nil {
-		return errors.New("redisDBVideoId object is nil")
-	}
-
 	score, err := redisDBVideoId.ZScore(ctx, CommentToIdKey, videoid).Result()
 
 	if err != nil && err != redis.Nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	videoResp := redis.Z{
@@ -172,7 +146,7 @@ func ReduceCommentCount(ctx context.Context, videoid string) error {
 
 	_, err = redisDBVideoId.ZAdd(ctx, CommentToIdKey, videoResp).Result()
 	if err != nil && err != redis.Nil {
-		return err
+		return errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	return nil
@@ -180,9 +154,6 @@ func ReduceCommentCount(ctx context.Context, videoid string) error {
 }
 
 func GetCounts(ctx context.Context, videoId string) (Counts, error) {
-	if redisDBVideoId == nil {
-		return Counts{}, errors.New("redisDBVideoId object is nil")
-	}
 
 	pipe := redisDBVideoId.Pipeline()
 
@@ -192,22 +163,22 @@ func GetCounts(ctx context.Context, videoId string) (Counts, error) {
 
 	_, err := pipe.Exec(ctx)
 	if err != nil && err != redis.Nil {
-		return Counts{}, err
+		return Counts{}, errmsg.RedisError.WithMessage(err.Error())
 	}
 
 	visitCount, visitErr := visitCmd.Result()
 	if visitErr != nil && visitErr != redis.Nil {
-		return Counts{}, visitErr
+		return Counts{}, errmsg.RedisError.WithMessage(visitErr.Error())
 	}
 
 	likeCount, likeErr := likeCmd.Result()
 	if likeErr != nil && likeErr != redis.Nil {
-		return Counts{}, likeErr
+		return Counts{}, errmsg.RedisError.WithMessage(likeErr.Error())
 	}
 
 	commentCount, commentErr := commentCmd.Result()
 	if commentErr != nil && commentErr != redis.Nil {
-		return Counts{}, commentErr
+		return Counts{}, errmsg.RedisError.WithMessage(commentErr.Error())
 	}
 
 	return Counts{

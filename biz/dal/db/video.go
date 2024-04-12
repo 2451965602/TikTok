@@ -2,19 +2,15 @@ package db
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
 	"work4/biz/model/video"
 	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 )
 
 func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
 
 	var videoResp []*Video
 	var err error
@@ -23,7 +19,7 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 	if req.LatestTime != nil && *req.LatestTime != "" {
 		toTime, err := strconv.ParseInt(*req.LatestTime, 10, 64)
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.ParseError
 		}
 
 		err = DB.
@@ -37,7 +33,7 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	} else {
 		err = DB.
@@ -50,7 +46,7 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
@@ -58,10 +54,6 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 }
 
 func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, description string) (int64, error) {
-
-	if DB == nil {
-		return -1, errors.New("DB object is nil")
-	}
 
 	var err error
 	var videoInfo *Video
@@ -82,21 +74,25 @@ func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, descrip
 		Error
 
 	if err != nil {
-		return -1, err
+		return -1, errmsg.DatabaseError
 	}
 
 	return videoInfo.VideoId, nil
 }
 
-func UploadList(ctx context.Context, pagenum, pagesize int64, userid string) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
+func UploadList(ctx context.Context, pagenum, pagesize, userid int64) ([]*Video, int64, error) {
 
 	var videoResp []*Video
 	var err error
 	var count int64
+
+	exist, err := IsUserExist(ctx, userid)
+	if err != nil {
+		return nil, -1, err
+	}
+	if !exist {
+		return nil, -1, errmsg.UserNotExistError
+	}
 
 	err = DB.
 		WithContext(ctx).
@@ -109,17 +105,13 @@ func UploadList(ctx context.Context, pagenum, pagesize int64, userid string) ([]
 		Error
 
 	if err != nil {
-		return nil, -1, err
+		return nil, -1, errmsg.DatabaseError
 	}
 
 	return videoResp, count, nil
 }
 
 func Rank(ctx context.Context, rank []string) ([]*Video, error) {
-
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
 
 	var videoResp []*Video
 	var err error
@@ -134,17 +126,13 @@ func Rank(ctx context.Context, rank []string) ([]*Video, error) {
 		Error
 
 	if err != nil {
-		return nil, err
+		return nil, errmsg.DatabaseError
 	}
 
 	return videoResp, nil
 }
 
 func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
 
 	var videoResp []*Video
 	var err error
@@ -162,7 +150,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, errors.New("用户不存在")
+			return nil, -1, errmsg.UserNotExistError
 		}
 
 		err = DB.
@@ -178,7 +166,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
@@ -193,7 +181,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, errors.New("用户不存在")
+			return nil, -1, errmsg.UserNotExistError
 		}
 
 		err = DB.
@@ -208,7 +196,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
@@ -225,7 +213,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 

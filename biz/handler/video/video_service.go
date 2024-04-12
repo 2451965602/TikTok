@@ -6,9 +6,9 @@ import (
 	"context"
 	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"work4/biz/model/video"
 )
 
@@ -19,19 +19,19 @@ func Upload(ctx context.Context, c *app.RequestContext) {
 	var req video.UploadRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
 	videodata, err := c.FormFile("videodata")
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
 	coverdata, err := c.FormFile("coverdata")
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -40,13 +40,13 @@ func Upload(ctx context.Context, c *app.RequestContext) {
 	err = service.NewVideoService(ctx, c).UploadVideo(videodata, coverdata, &req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // UploadList .
@@ -56,7 +56,7 @@ func UploadList(ctx context.Context, c *app.RequestContext) {
 	var req video.UploadListRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -65,14 +65,14 @@ func UploadList(ctx context.Context, c *app.RequestContext) {
 	videoResp, count, err := service.NewVideoService(ctx, c).UploadList(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.VideoList(videoResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Rank .
@@ -82,7 +82,7 @@ func Rank(ctx context.Context, c *app.RequestContext) {
 	var req video.RankRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -91,14 +91,14 @@ func Rank(ctx context.Context, c *app.RequestContext) {
 	videoResp, err := service.NewVideoService(ctx, c).Rank(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.VideoList(videoResp, 100)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Query .
@@ -108,7 +108,7 @@ func Query(ctx context.Context, c *app.RequestContext) {
 	var req video.QueryRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -117,14 +117,14 @@ func Query(ctx context.Context, c *app.RequestContext) {
 	videoResp, count, err := service.NewVideoService(ctx, c).Query(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.VideoList(videoResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Feed .
@@ -134,7 +134,7 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 	var req video.FeedRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -143,12 +143,12 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 	videoResp, count, err := service.NewVideoService(ctx, c).Feed(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.VideoList(videoResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }

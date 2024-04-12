@@ -12,6 +12,7 @@ import (
 	"work4/biz/model/user"
 	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 )
 
 var (
@@ -46,7 +47,7 @@ func AccessTokenJwt() {
 		},
 
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) {
-			pack.SendResponse(c, message, code)
+			pack.BuildFailResponse(c, errmsg.AuthError)
 		},
 
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
@@ -96,7 +97,7 @@ func RefreshTokenJwt() {
 		},
 
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) {
-			pack.SendResponse(c, message, code)
+			pack.BuildFailResponse(c, errmsg.AuthError)
 		},
 
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
@@ -117,7 +118,7 @@ func RefreshTokenJwt() {
 	}
 }
 
-func GenerateAccessToken(ctx context.Context, c *app.RequestContext) {
+func GenerateAccessToken(c *app.RequestContext) {
 	data := service.GetUidFormContext(c)
 	tokenString, _, _ := AccessTokenJwtMiddleware.TokenGenerator(data)
 	c.Header("New-Access-Token", tokenString)

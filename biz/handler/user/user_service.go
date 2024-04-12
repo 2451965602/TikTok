@@ -7,9 +7,9 @@ import (
 	"work4/biz/middleware"
 	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"work4/biz/model/user"
 )
 
@@ -20,7 +20,7 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	var req user.RegisterRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -29,13 +29,13 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	userResp, err := service.NewUserService(ctx, c).Register(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.User(userResp)
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Login .
@@ -45,7 +45,7 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	var req user.LoginRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -54,19 +54,19 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	userResp, err := service.NewUserService(ctx, c).Login(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
 	middleware.AccessTokenJwtMiddleware.LoginHandler(ctx, c)
 	middleware.RefreshTokenJwtMiddleware.LoginHandler(ctx, c)
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.UserInfoDetail(userResp)
 	c.Header("Access-Token", c.GetString("Access-Token"))
 	c.Header("Refresh-Token", c.GetString("Refresh-Token"))
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Info .
@@ -76,7 +76,7 @@ func Info(ctx context.Context, c *app.RequestContext) {
 	var req user.InfoRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -85,23 +85,23 @@ func Info(ctx context.Context, c *app.RequestContext) {
 	userResp, err := service.NewUserService(ctx, c).GetInfo(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.UserInfoDetail(userResp)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // Upload .
-// @router /user/avatar/upload [PUT]
+// @router /user/avatar/oss [PUT]
 func Upload(ctx context.Context, c *app.RequestContext) {
 	var err error
 	data, err := c.FormFile("data")
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -110,14 +110,14 @@ func Upload(ctx context.Context, c *app.RequestContext) {
 	userResp, err := service.NewUserService(ctx, c).UploadAvatar(data)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.User(userResp)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // MFAGet .
@@ -127,7 +127,7 @@ func MFAGet(ctx context.Context, c *app.RequestContext) {
 	var req user.MFAGetRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -136,14 +136,14 @@ func MFAGet(ctx context.Context, c *app.RequestContext) {
 	userResp, err := service.NewUserService(ctx, c).MFAGet()
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.MFA(userResp)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // MFA .
@@ -153,7 +153,7 @@ func MFA(ctx context.Context, c *app.RequestContext) {
 	var req user.MFABindRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
@@ -162,11 +162,11 @@ func MFA(ctx context.Context, c *app.RequestContext) {
 	err = service.NewUserService(ctx, c).MFABind(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }

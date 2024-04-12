@@ -1,15 +1,10 @@
 package db
 
 import (
-	"errors"
 	"work4/pkg/constants"
 )
 
 func CreateMessage(form, to, msg string) error {
-
-	if DB == nil {
-		return errors.New("DB object is nil")
-	}
 
 	err := DB.
 		Table(constants.MsgTable).
@@ -29,10 +24,6 @@ func CreateMessage(form, to, msg string) error {
 }
 
 func GetMessage(to string) (*[]Message, error) {
-
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
 
 	var msglist []Message
 

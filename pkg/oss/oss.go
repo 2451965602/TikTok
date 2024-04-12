@@ -1,8 +1,7 @@
-package upload
+package oss
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/h2non/filetype"
 	"github.com/qiniu/go-sdk/v7/auth"
@@ -12,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 )
 
 func IsImage(data *multipart.FileHeader) error {
@@ -19,27 +19,27 @@ func IsImage(data *multipart.FileHeader) error {
 	buffer := make([]byte, 261)
 	_, err := file.Read(buffer)
 	if err != nil {
-		return err
+		return errmsg.FileReadError
 	}
 
 	if filetype.IsImage(buffer) {
 		return nil
 	}
-	return errors.New("请上传图片")
+	return errmsg.IsNotImageError
 }
 
 func IsVideo(data *multipart.FileHeader) error {
 	file, _ := data.Open()
-	buffer := make([]byte, 261) // 读取足够多的字节以便确定文件类型
+	buffer := make([]byte, 261)
 
 	_, err := file.Read(buffer)
 	if err != nil {
-		return err
+		return errmsg.FileReadError
 	}
 	if filetype.IsVideo(buffer) {
 		return nil
 	}
-	return errors.New("请上传图片视频")
+	return errmsg.IsNotVideoError
 }
 
 func SaveFile(data *multipart.FileHeader, storePath, fileName string) (err error) {
@@ -48,14 +48,14 @@ func SaveFile(data *multipart.FileHeader, storePath, fileName string) (err error
 		// 路径不存在，创建路径
 		err := os.MkdirAll(storePath, 0755)
 		if err != nil {
-			return fmt.Errorf("创建路径错误: %w", err)
+			return errmsg.FilePathCreateError
 		}
 	}
 
 	//打开本地文件
 	dist, err := os.OpenFile(filepath.Join(storePath, fileName), os.O_RDWR|os.O_CREATE, 777)
 	if err != nil {
-		return fmt.Errorf("创建文件错误:%w", err)
+		return errmsg.FileWriteError
 	}
 	defer func(dist *os.File) {
 		_ = dist.Close()
@@ -63,7 +63,7 @@ func SaveFile(data *multipart.FileHeader, storePath, fileName string) (err error
 
 	src, err := data.Open()
 	if err != nil {
-		return fmt.Errorf("保存文件错误:%w", err)
+		return errmsg.FileWriteError.WithMessage(err.Error())
 	}
 	defer func(src multipart.File) {
 		_ = src.Close()
@@ -96,7 +96,7 @@ func Upload(localFile, filename, userid, origin string) (string, error) {
 
 	recorder, err := storage.NewFileRecorder(os.TempDir())
 	if err != nil {
-		return "", err
+		return "", errmsg.OssUploadError.WithMessage(err.Error())
 	}
 
 	putExtra := storage.RputV2Extra{
@@ -105,14 +105,13 @@ func Upload(localFile, filename, userid, origin string) (string, error) {
 
 	err = resumeUploader.PutFile(context.Background(), &ret, upToken, key, localFile, &putExtra)
 	if err != nil {
-		return "", fmt.Errorf("上传错误:%w", err)
+		return "", errmsg.OssUploadError
 	}
 
 	err = os.Remove(localFile)
 	if err != nil {
-		return "", err
+		return "", errmsg.FileDeleteError
 	}
-	fmt.Println("File deleted successfully")
 
 	return storage.MakePublicURL(constants.QiNiuDomain, ret.Key), nil
 
