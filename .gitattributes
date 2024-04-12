@@ -2,3 +2,4 @@
 *.txt  eol=lf
 *.md  eol=lf
 *.yaml eol=lf
+*.json eol=lf
