@@ -4,8 +4,8 @@ include "model.thrift"
 
 //注册
 struct RegisterRequest{
-    1:required string username,
-    2:required string password,
+    1:required string username (api.form="username"),
+    2:required string password (api.form="password"),
 }
 
 struct RegisterResponse{
@@ -14,9 +14,9 @@ struct RegisterResponse{
 }
 //登录
 struct LoginRequest{
-    1:required string username,
-    2:required string password,
-    3:optional string code,
+    1:required string username (api.form="username"),
+    2:required string password (api.form="password"),
+    3:optional string code (api.form="code"),
 }
 
 struct LoginResponse{
@@ -25,7 +25,7 @@ struct LoginResponse{
 }
 //用户信息
 struct InfoRequest{
-    1:required string user_id,
+    1:required string user_id (api.query="user_id"),
 }
 
 struct InfoResponse{
@@ -34,7 +34,7 @@ struct InfoResponse{
 }
 //上传头像
 struct UploadRequest{
-    1:required binary data
+    1:required binary data (api.form="data"),
 }
 
 struct UploadResponse{
@@ -56,8 +56,8 @@ struct MFAGetResponse{
 
 //绑定多因素身份认证(MFA)
 struct MFABindRequest{
-    1:required string code,
-    2:required string secret,
+    1:required string code (api.form="code"),
+    2:required string secret (api.form="secret"),
 }
 
 struct MFABindResponse{
@@ -69,7 +69,7 @@ service UserService{
     RegisterResponse Register(1:RegisterRequest req)(api.post="/user/register"),
     LoginResponse Login(1:LoginRequest req)(api.post="/user/login"),
     InfoResponse Info(1:InfoRequest req)(api.get="/user/info"),
-    UploadResponse Upload(1:UploadRequest req)(api.put="/user/avatar/oss")
+    UploadResponse Upload(1:UploadRequest req)(api.put="/user/avatar/upload")
     MFAGetResponse MFAGet(1:MFAGetRequest req)(api.get="/auth/mfa/qrcode")
     MFABindResponse MFA(1:MFABindRequest req)(api.post="/auth/mfa/bind")
 }

@@ -11,9 +11,9 @@ import (
 
 // 点赞操作
 type LikeRequest struct {
-	VideoID    *string `thrift:"video_id,1,optional" form:"video_id" json:"video_id,omitempty" query:"video_id"`
-	CommentID  *string `thrift:"comment_id,2,optional" form:"comment_id" json:"comment_id,omitempty" query:"comment_id"`
-	ActionType string  `thrift:"action_type,3,required" form:"action_type,required" json:"action_type,required" query:"action_type,required"`
+	VideoID    *string `thrift:"video_id,1,optional" form:"video_id" json:"video_id,omitempty"`
+	CommentID  *string `thrift:"comment_id,2,optional" form:"comment_id" json:"comment_id,omitempty"`
+	ActionType string  `thrift:"action_type,3,required" form:"action_type,required" json:"action_type,required"`
 }
 
 func NewLikeRequest() *LikeRequest {
@@ -407,9 +407,9 @@ func (p *LikeResponse) String() string {
 
 // 点赞列表
 type LikeListRequest struct {
-	UserID   string `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
-	PageSize int64  `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64  `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
+	UserID   string `thrift:"user_id,1,required" json:"user_id,required" query:"user_id,required"`
+	PageSize int64  `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64  `thrift:"page_num,3,required" json:"page_num,required" query:"page_num,required"`
 }
 
 func NewLikeListRequest() *LikeListRequest {
@@ -846,9 +846,9 @@ func (p *LikeListResponse) String() string {
 
 // 评论
 type CommentRequest struct {
-	VideoID   *string `thrift:"video_id,1,optional" form:"video_id" json:"video_id,omitempty" query:"video_id"`
-	CommentID *string `thrift:"comment_id,2,optional" form:"comment_id" json:"comment_id,omitempty" query:"comment_id"`
-	Content   string  `thrift:"content,3,required" form:"content,required" json:"content,required" query:"content,required"`
+	VideoID   *string `thrift:"video_id,1,optional" form:"video_id" json:"video_id,omitempty"`
+	CommentID *string `thrift:"comment_id,2,optional" form:"comment_id" json:"comment_id,omitempty"`
+	Content   string  `thrift:"content,3,required" form:"content,required" json:"content,required"`
 }
 
 func NewCommentRequest() *CommentRequest {
@@ -1242,9 +1242,9 @@ func (p *CommentResponse) String() string {
 
 // 评论列表
 type CommentListRequest struct {
-	VideoID  string `thrift:"video_id,1,required" form:"video_id,required" json:"video_id,required" query:"video_id,required"`
-	PageSize int64  `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64  `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
+	VideoID  string `thrift:"video_id,1,required" json:"video_id,required" query:"video_id,required"`
+	PageSize int64  `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64  `thrift:"page_num,3,required" json:"page_num,required" query:"page_num,required"`
 }
 
 func NewCommentListRequest() *CommentListRequest {
@@ -1681,7 +1681,7 @@ func (p *CommentListResponse) String() string {
 
 // 删除评论
 type DeleteCommentRequest struct {
-	CommentID string `thrift:"comment_id,1,required" form:"comment_id,required" json:"comment_id,required" query:"comment_id,required"`
+	CommentID string `thrift:"comment_id,1,required" json:"comment_id,required" query:"comment_id,required"`
 }
 
 func NewDeleteCommentRequest() *DeleteCommentRequest {

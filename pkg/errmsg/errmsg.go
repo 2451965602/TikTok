@@ -11,6 +11,7 @@ const (
 	DuplicationErrorCode
 	DatabaseErrorCode
 	RedisErrorCode
+	ConfigMissErrorCode
 
 	FileReadErrorCode
 	FilePathCreateErrorCode
@@ -46,6 +47,7 @@ const (
 	DuplicationErrorMsg = "Duplication Request"
 	DatabaseErrorMsg    = "Database Operation Error"
 	RedisErrorMsg       = "Redis Operation Error"
+	ConfigMissErrorMsg  = "Config Missing Error"
 
 	FileReadErrorMsg       = "File Read Error"
 	FilePathCreateErrorMsg = "Create File Path Error"
@@ -101,6 +103,7 @@ var (
 	DuplicationError = NewErrorMessage(DuplicationErrorCode, DuplicationErrorMsg)
 	DatabaseError    = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
 	RedisError       = NewErrorMessage(RedisErrorCode, RedisErrorMsg)
+	ConfigMissError  = NewErrorMessage(ConfigMissErrorCode, ConfigMissErrorMsg)
 
 	FileReadError       = NewErrorMessage(FileReadErrorCode, FileReadErrorMsg)
 	FilePathCreateError = NewErrorMessage(FilePathCreateErrorCode, FilePathCreateErrorMsg)

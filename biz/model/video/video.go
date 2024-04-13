@@ -11,9 +11,9 @@ import (
 
 // 视频流
 type FeedRequest struct {
-	LatestTime *string `thrift:"latest_time,1,optional" form:"latest_time" json:"latest_time,omitempty" query:"latest_time"`
-	PageNum    int64   `thrift:"page_num,2,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	PageSize   int64   `thrift:"page_size,3,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
+	LatestTime *string `thrift:"latest_time,1,optional" json:"latest_time,omitempty" query:"latest_time"`
+	PageNum    int64   `thrift:"page_num,2,required" json:"page_num,required" query:"page_num,required"`
+	PageSize   int64   `thrift:"page_size,3,required" json:"page_size,required" query:"page_size,required"`
 }
 
 func NewFeedRequest() *FeedRequest {
@@ -454,9 +454,10 @@ func (p *FeedResponse) String() string {
 
 // 投稿
 type UploadRequest struct {
-	Title string `thrift:"title,1,required" form:"title,required" json:"title,required" query:"title,required"`
-	//    2:required binary data
-	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
+	Title       string `thrift:"title,1,required" form:"title,required" json:"title,required"`
+	Coverdata   []byte `thrift:"coverdata,2,required" form:"coverdata,required" json:"coverdata,required"`
+	Videodata   []byte `thrift:"videodata,3,required" form:"videodata,required" json:"videodata,required"`
+	Description string `thrift:"description,4,required" form:"description,required" json:"description,required"`
 }
 
 func NewUploadRequest() *UploadRequest {
@@ -467,13 +468,23 @@ func (p *UploadRequest) GetTitle() (v string) {
 	return p.Title
 }
 
+func (p *UploadRequest) GetCoverdata() (v []byte) {
+	return p.Coverdata
+}
+
+func (p *UploadRequest) GetVideodata() (v []byte) {
+	return p.Videodata
+}
+
 func (p *UploadRequest) GetDescription() (v string) {
 	return p.Description
 }
 
 var fieldIDToName_UploadRequest = map[int16]string{
 	1: "title",
-	2: "description",
+	2: "coverdata",
+	3: "videodata",
+	4: "description",
 }
 
 func (p *UploadRequest) Read(iprot thrift.TProtocol) (err error) {
@@ -481,6 +492,8 @@ func (p *UploadRequest) Read(iprot thrift.TProtocol) (err error) {
 	var fieldTypeId thrift.TType
 	var fieldId int16
 	var issetTitle bool = false
+	var issetCoverdata bool = false
+	var issetVideodata bool = false
 	var issetDescription bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
@@ -511,6 +524,24 @@ func (p *UploadRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetCoverdata = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetVideodata = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
 				issetDescription = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
@@ -533,8 +564,18 @@ func (p *UploadRequest) Read(iprot thrift.TProtocol) (err error) {
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetDescription {
+	if !issetCoverdata {
 		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetVideodata {
+		fieldId = 3
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetDescription {
+		fieldId = 4
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -566,6 +607,24 @@ func (p *UploadRequest) ReadField1(iprot thrift.TProtocol) error {
 }
 func (p *UploadRequest) ReadField2(iprot thrift.TProtocol) error {
 
+	if v, err := iprot.ReadBinary(); err != nil {
+		return err
+	} else {
+		p.Coverdata = []byte(v)
+	}
+	return nil
+}
+func (p *UploadRequest) ReadField3(iprot thrift.TProtocol) error {
+
+	if v, err := iprot.ReadBinary(); err != nil {
+		return err
+	} else {
+		p.Videodata = []byte(v)
+	}
+	return nil
+}
+func (p *UploadRequest) ReadField4(iprot thrift.TProtocol) error {
+
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
@@ -586,6 +645,14 @@ func (p *UploadRequest) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField2(oprot); err != nil {
 			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
 			goto WriteFieldError
 		}
 	}
@@ -624,10 +691,10 @@ WriteFieldEndError:
 }
 
 func (p *UploadRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("description", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("coverdata", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Description); err != nil {
+	if err := oprot.WriteBinary([]byte(p.Coverdata)); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -638,6 +705,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *UploadRequest) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("videodata", thrift.STRING, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBinary([]byte(p.Videodata)); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *UploadRequest) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("description", thrift.STRING, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Description); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
 func (p *UploadRequest) String() string {
@@ -792,9 +893,9 @@ func (p *UploadResponse) String() string {
 
 // 发布列表
 type UploadListRequest struct {
-	UserID   string `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
-	PageNum  int64  `thrift:"page_num,2,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	PageSize int64  `thrift:"page_size,3,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
+	UserID   string `thrift:"user_id,1,required" json:"user_id,required" query:"user_id,required"`
+	PageNum  int64  `thrift:"page_num,2,required" json:"page_num,required" query:"page_num,required"`
+	PageSize int64  `thrift:"page_size,3,required" json:"page_size,required" query:"page_size,required"`
 }
 
 func NewUploadListRequest() *UploadListRequest {
@@ -1231,8 +1332,8 @@ func (p *UploadListResponse) String() string {
 
 // 热门排行榜
 type RankRequest struct {
-	PageNum  int64 `thrift:"page_num,1,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	PageSize int64 `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64 `thrift:"page_num,1,required" json:"page_num,required" query:"page_num,required"`
+	PageSize int64 `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
 }
 
 func NewRankRequest() *RankRequest {
@@ -1619,12 +1720,12 @@ func (p *RankResponse) String() string {
 
 // 搜索视频
 type QueryRequest struct {
-	Keywords string  `thrift:"keywords,1,required" form:"keywords,required" json:"keywords,required" query:"keywords,required"`
-	PageSize int64   `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64   `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	FromDate *int64  `thrift:"from_date,4,optional" form:"from_date" json:"from_date,omitempty" query:"from_date"`
-	ToDate   *int64  `thrift:"to_date,5,optional" form:"to_date" json:"to_date,omitempty" query:"to_date"`
-	Username *string `thrift:"username,6,optional" form:"username" json:"username,omitempty" query:"username"`
+	Keywords string  `thrift:"keywords,1,required" form:"keywords,required" json:"keywords,required"`
+	PageSize int64   `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required"`
+	PageNum  int64   `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required"`
+	FromDate *int64  `thrift:"from_date,4,optional" form:"from_date" json:"from_date,omitempty"`
+	ToDate   *int64  `thrift:"to_date,5,optional" form:"to_date" json:"to_date,omitempty"`
+	Username *string `thrift:"username,6,optional" form:"username" json:"username,omitempty"`
 }
 
 func NewQueryRequest() *QueryRequest {

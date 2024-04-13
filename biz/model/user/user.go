@@ -11,8 +11,8 @@ import (
 
 // 注册
 type RegisterRequest struct {
-	Username string `thrift:"username,1,required" form:"username,required" json:"username,required" query:"username,required"`
-	Password string `thrift:"password,2,required" form:"password,required" json:"password,required" query:"password,required"`
+	Username string `thrift:"username,1,required" form:"username,required" json:"username,required"`
+	Password string `thrift:"password,2,required" form:"password,required" json:"password,required"`
 }
 
 func NewRegisterRequest() *RegisterRequest {
@@ -399,9 +399,9 @@ func (p *RegisterResponse) String() string {
 
 // 登录
 type LoginRequest struct {
-	Username string  `thrift:"username,1,required" form:"username,required" json:"username,required" query:"username,required"`
-	Password string  `thrift:"password,2,required" form:"password,required" json:"password,required" query:"password,required"`
-	Code     *string `thrift:"code,3,optional" form:"code" json:"code,omitempty" query:"code"`
+	Username string  `thrift:"username,1,required" form:"username,required" json:"username,required"`
+	Password string  `thrift:"password,2,required" form:"password,required" json:"password,required"`
+	Code     *string `thrift:"code,3,optional" form:"code" json:"code,omitempty"`
 }
 
 func NewLoginRequest() *LoginRequest {
@@ -842,7 +842,7 @@ func (p *LoginResponse) String() string {
 
 // 用户信息
 type InfoRequest struct {
-	UserID string `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
+	UserID string `thrift:"user_id,1,required" json:"user_id,required" query:"user_id,required"`
 }
 
 func NewInfoRequest() *InfoRequest {
@@ -1179,7 +1179,7 @@ func (p *InfoResponse) String() string {
 
 // 上传头像
 type UploadRequest struct {
-	Data []byte `thrift:"data,1,required" form:"data,required" json:"data,required" query:"data,required"`
+	Data []byte `thrift:"data,1,required" form:"data,required" json:"data,required"`
 }
 
 func NewUploadRequest() *UploadRequest {
@@ -1790,8 +1790,8 @@ func (p *MFAGetResponse) String() string {
 
 // 绑定多因素身份认证(MFA)
 type MFABindRequest struct {
-	Code   string `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
-	Secret string `thrift:"secret,2,required" form:"secret,required" json:"secret,required" query:"secret,required"`
+	Code   string `thrift:"code,1,required" form:"code,required" json:"code,required"`
+	Secret string `thrift:"secret,2,required" form:"secret,required" json:"secret,required"`
 }
 
 func NewMFABindRequest() *MFABindRequest {

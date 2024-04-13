@@ -166,6 +166,16 @@ func UploadAvatar(ctx context.Context, id, url string) (*User, error) {
 		Table(constants.UserTable).
 		Where("user_id = ?", id).
 		Update("avatar_url", url).
+		Error
+
+	if err != nil {
+		return nil, errmsg.DatabaseError
+	}
+
+	err = DB.
+		WithContext(ctx).
+		Table(constants.UserTable).
+		Where("user_id = ?", id).
 		First(&userResp).
 		Error
 

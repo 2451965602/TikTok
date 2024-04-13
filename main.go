@@ -4,19 +4,29 @@ package main
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"work4/biz/middleware"
 	"work4/biz/router/websock"
 	"work4/pkg/cfg"
 )
 
-func Init() {
-	cfg.Init()
+func Init() error {
+	err := cfg.Init()
+	if err != nil {
+		return err
+	}
 	middleware.Init()
+
+	return nil
 }
 
 func main() {
 
-	Init()
+	err := Init()
+	if err != nil {
+		hlog.Error(err)
+		return
+	}
 
 	h := server.Default(server.WithHostPorts("0.0.0.0:10001"))
 	ws := server.Default(server.WithHostPorts("0.0.0.0:10000"))

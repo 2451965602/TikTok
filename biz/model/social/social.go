@@ -11,8 +11,8 @@ import (
 
 // 关注操作
 type StarRequest struct {
-	ToUserID   string `thrift:"to_user_id,1,required" form:"to_user_id,required" json:"to_user_id,required" query:"to_user_id,required"`
-	ActionType int64  `thrift:"action_type,2,required" form:"action_type,required" json:"action_type,required" query:"action_type,required"`
+	ToUserID   string `thrift:"to_user_id,1,required" form:"to_user_id,required" json:"to_user_id,required"`
+	ActionType int64  `thrift:"action_type,2,required" form:"action_type,required" json:"action_type,required"`
 }
 
 func NewStarRequest() *StarRequest {
@@ -348,9 +348,9 @@ func (p *StarResponse) String() string {
 
 // 关注列表
 type StarListRequest struct {
-	UserID   string `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
-	PageSize int64  `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64  `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
+	UserID   string `thrift:"user_id,1,required" json:"user_id,required" query:"user_id,required"`
+	PageSize int64  `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64  `thrift:"page_num,3,required" json:"page_num,required" query:"page_num,required"`
 }
 
 func NewStarListRequest() *StarListRequest {
@@ -787,9 +787,9 @@ func (p *StarListResponse) String() string {
 
 // 粉丝列表
 type FanListRequest struct {
-	UserID   string `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
-	PageSize int64  `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64  `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
+	UserID   string `thrift:"user_id,1,required" json:"user_id,required" query:"user_id,required"`
+	PageSize int64  `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64  `thrift:"page_num,3,required" json:"page_num,required" query:"page_num,required"`
 }
 
 func NewFanListRequest() *FanListRequest {
@@ -1226,8 +1226,8 @@ func (p *FanListResponse) String() string {
 
 // 好友列表
 type FriendListRequest struct {
-	PageSize int64 `thrift:"page_size,1,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64 `thrift:"page_num,2,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
+	PageSize int64 `thrift:"page_size,1,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64 `thrift:"page_num,2,required" json:"page_num,required" query:"page_num,required"`
 }
 
 func NewFriendListRequest() *FriendListRequest {

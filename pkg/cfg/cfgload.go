@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"work4/biz/dal"
 	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 )
 
 var Config *viper.Viper
@@ -15,7 +16,7 @@ func Init() error {
 	Config.SetConfigFile("./config/config.json")
 	Config.SetConfigType("json")
 	if err := Config.ReadInConfig(); err != nil {
-		return err
+		return errmsg.ConfigMissError
 	}
 	loadConfig()
 
