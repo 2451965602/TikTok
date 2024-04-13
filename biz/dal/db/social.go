@@ -71,7 +71,11 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid, to int64) e
 		Where("user_id = ?", bigid).
 		Update("Status", 0).
 		Error
-	return errmsg.DatabaseError
+	if err != nil {
+		return errmsg.DatabaseError
+	}
+
+	return nil
 }
 
 // StarUser 关注或取消关注用户
@@ -80,6 +84,9 @@ func StarUser(ctx context.Context, bigid, smallid, actiontype, to int64) (err er
 	// 关注操作
 	if actiontype == 0 {
 		err = createOrUpdateFollowRecord(ctx, bigid, smallid, to)
+		if err != nil {
+			return err
+		}
 	} else { // 取消关注操作
 		var social Social
 		err = DB.

@@ -53,7 +53,7 @@ func SaveFile(data *multipart.FileHeader, storePath, fileName string) (err error
 	}
 
 	//打开本地文件
-	dist, err := os.OpenFile(filepath.Join(storePath, fileName), os.O_RDWR|os.O_CREATE, 777)
+	dist, err := os.OpenFile(filepath.Join(storePath, fileName), os.O_RDWR|os.O_CREATE, 0777)
 	if err != nil {
 		return errmsg.FileWriteError
 	}

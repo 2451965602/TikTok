@@ -109,6 +109,10 @@ func (s *InteractService) Comment(req *interact.CommentRequest) error {
 		}
 
 		err = redis.UpdateIdInRank(s.ctx, *req.VideoID)
+		if err != nil {
+			return err
+		}
+
 		err = redis.AddCommentCount(s.ctx, *req.VideoID)
 		if err != nil {
 			return err
@@ -135,6 +139,10 @@ func (s *InteractService) CommentList(req *interact.CommentListRequest) ([]*db.C
 func (s *InteractService) DeleteComment(req *interact.DeleteCommentRequest) error {
 
 	commentid, err := strconv.ParseInt(req.CommentID, 10, 64)
+	if err != nil {
+		return errmsg.ParseError
+	}
+
 	videoid, err := db.DeleteComment(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), commentid)
 	if err != nil {
 		return errmsg.ParseError

@@ -26,5 +26,8 @@ const (
 	LikeTable    = "like"
 	SocialTable  = "social"
 	MsgTable     = "messages"
-	ContextUid   = "userid"
+
+	ContextUid  = "userid"
+	DefaultTime = "1970-01-01 08:00:00"
+	TimeFormat  = "2006-01-02 15:04:05"
 )

@@ -3,10 +3,11 @@ package websocket
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/websocket"
 	"strconv"
+	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 )
 
 var upgrader = websocket.HertzUpgrader{}
@@ -51,7 +52,7 @@ func Chat(ctx context.Context, c *app.RequestContext) {
 	})
 
 	if err != nil {
-		c.JSON(consts.StatusOK, `error`)
+		pack.BuildFailResponse(c, errmsg.WebsockUpgradeError.WithMessage(err.Error()))
 		return
 	}
 }

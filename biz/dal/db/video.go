@@ -55,10 +55,7 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 
 func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, description string) (int64, error) {
 
-	var err error
-	var videoInfo *Video
-
-	videoInfo = &Video{
+	videoInfo := &Video{
 		UserId:      userid,
 		VideoUrl:    videourl,
 		CoverUrl:    coverurl,
@@ -66,7 +63,7 @@ func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, descrip
 		Description: description,
 	}
 
-	err = DB.
+	err := DB.
 		WithContext(ctx).
 		Table(constants.VideoTable).
 		Where("user_id=?", userid).

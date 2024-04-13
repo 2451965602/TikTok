@@ -6,6 +6,7 @@ import (
 	"github.com/hertz-contrib/websocket"
 	"strconv"
 	"time"
+	"work4/pkg/constants"
 	"work4/pkg/errmsg"
 
 	"work4/biz/dal/db"
@@ -40,10 +41,9 @@ func (s ChatService) Login() error {
 	return nil
 }
 
-func (s ChatService) Logout() error {
+func (s ChatService) Logout() {
 	uid := strconv.FormatInt(GetUidFormContext(s.c), 10)
 	userMap[uid] = nil
-	return nil
 }
 
 func (s ChatService) SendMessage(content []byte) error {
@@ -105,5 +105,5 @@ func (s ChatService) ReadOfflineMessage() error {
 }
 
 func userinfoAppend(rawText []byte, from string) []byte {
-	return []byte(time.Now().Format("2006-01-02 15:04:05") + ` [` + from + `]: ` + string(rawText))
+	return []byte(time.Now().Format(constants.TimeFormat) + ` [` + from + `]: ` + string(rawText))
 }

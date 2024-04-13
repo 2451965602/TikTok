@@ -34,6 +34,7 @@ const (
 	WebsockChatWriteErrorCode
 	WebsockChatReadErrorCode
 	WebsockChatParseErrorCode
+	WebsockUpgradeErrorCode
 )
 
 const (
@@ -68,6 +69,7 @@ const (
 	WebsockChatWriteErrorMsg = "Websocket Chat Write Error"
 	WebsockChatReadErrorMsg  = "Websocket Chat Read Error"
 	WebsockChatParseErrorMsg = "Websocket Chat Parse Error"
+	WebsockUpgradeErrorMsg   = "Websocket Upgrade Error"
 )
 
 type ErrorMessage struct {
@@ -122,4 +124,5 @@ var (
 	WebsockChatWriteError = NewErrorMessage(WebsockChatWriteErrorCode, WebsockChatWriteErrorMsg)
 	WeBsockChatReadError  = NewErrorMessage(WebsockChatReadErrorCode, WebsockChatReadErrorMsg)
 	WebsockChatParseError = NewErrorMessage(WebsockChatParseErrorCode, WebsockChatParseErrorMsg)
+	WebsockUpgradeError   = NewErrorMessage(WebsockUpgradeErrorCode, WebsockUpgradeErrorMsg)
 )

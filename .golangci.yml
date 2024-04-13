@@ -1,0 +1,25 @@
+linters:
+    # 启用特定的 linter
+    # https://golangci-lint.run/usage/linters/#enabled-by-default
+    enable:
+        - bodyclose
+        - goconst
+        - perfsprint
+        - unconvert
+linters-settings:
+
+    perfsprint:
+        # 即使需要 int 或 uint 类型转换，也会进行优化。
+        # 默认值：true
+        int-conversion: false
+
+        # 仅有一个参数时优化为 `fmt.Sprintf`。
+        # 默认值：true
+        sprintf1: false
+
+issues:
+
+    exclude-rules:
+        -   path: biz/handler/websocket/websocket.go
+            linters:
+                - errcheck

@@ -83,12 +83,11 @@ func RefreshTokenJwt() {
 		IdentityKey:                 IdentityKey,
 
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(interface{}); ok {
-				return jwt.MapClaims{
-					RefreshTokenJwtMiddleware.IdentityKey: v,
-				}
+
+			return jwt.MapClaims{
+				RefreshTokenJwtMiddleware.IdentityKey: data,
 			}
-			return jwt.MapClaims{}
+
 		},
 
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {

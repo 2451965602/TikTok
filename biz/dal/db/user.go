@@ -50,7 +50,7 @@ func OptSecret(user *User) (*MFA, error) {
 
 	secret, err := util.ExtractSecretFromTOTPURL(user.OptSecret)
 	if err != nil {
-		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
+		return nil, err
 	}
 
 	MFAResp.Secret = secret

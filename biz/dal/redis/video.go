@@ -14,9 +14,7 @@ var VideoKey = "Video"
 
 func AddIdToRank(ctx context.Context, videoid string) error {
 
-	var videoResp redis.Z
-
-	videoResp = redis.Z{
+	videoResp := redis.Z{
 		Score:  0,
 		Member: videoid,
 	}

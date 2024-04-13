@@ -70,6 +70,9 @@ func (s *VideoService) UploadVideo(videodata *multipart.FileHeader, coverdata *m
 	}
 
 	videoId, err := db.UploadVideo(s.ctx, userid, videoUrl, coverUrl, req.Title, req.Description)
+	if err != nil {
+		return err
+	}
 
 	err = redis.AddIdToRank(s.ctx, strconv.FormatInt(videoId, 10))
 	if err != nil {
