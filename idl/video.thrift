@@ -6,6 +6,8 @@ include "model.thrift"
 //视频流
 struct FeedRequest{
     1:optional string latest_time
+    2:required i64 page_num,
+    3:required i64 page_size,
 }
 
 struct FeedResponse{

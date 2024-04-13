@@ -8,13 +8,13 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 
-	"work4/pkg/upload"
+	"work4/pkg/oss"
 )
 
 func GetUidFormContext(c *app.RequestContext) int64 {
-	uid, _ := c.Get(env.ContextUid)
+	uid, _ := c.Get(constants.ContextUid)
 	userid, err := convertToInt64(uid)
 	if err != nil {
 		panic(err)
@@ -45,11 +45,11 @@ func UploadAndGetUrl(data *multipart.FileHeader, userid, sort string) (string, e
 	fileName := uuid.NewV4().String() + ext
 	storePath := filepath.Join("static", userid, sort)
 
-	if err := upload.SaveFile(data, storePath, fileName); err != nil {
+	if err := oss.SaveFile(data, storePath, fileName); err != nil {
 		return "", err
 	}
 
-	url, err := upload.Upload(filepath.Join(storePath, fileName), fileName, userid, sort)
+	url, err := oss.Upload(filepath.Join(storePath, fileName), fileName, userid, sort)
 
 	if err != nil {
 		return "", err

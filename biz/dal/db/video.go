@@ -2,19 +2,15 @@ package db
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
 	"work4/biz/model/video"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 )
 
 func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
 
 	var videoResp []*Video
 	var err error
@@ -23,30 +19,34 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 	if req.LatestTime != nil && *req.LatestTime != "" {
 		toTime, err := strconv.ParseInt(*req.LatestTime, 10, 64)
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.ParseError
 		}
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.VideoTable).
+			Table(constants.VideoTable).
 			Where("created_at > ? ", time.Unix(toTime, 0)).
+			Limit(int(req.PageSize)).
+			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
 			Find(&videoResp).
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	} else {
 		err = DB.
 			WithContext(ctx).
-			Table(env.VideoTable).
+			Table(constants.VideoTable).
+			Limit(int(req.PageSize)).
+			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
 			Find(&videoResp).
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
@@ -55,14 +55,7 @@ func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) 
 
 func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, description string) (int64, error) {
 
-	if DB == nil {
-		return -1, errors.New("DB object is nil")
-	}
-
-	var err error
-	var videoInfo *Video
-
-	videoInfo = &Video{
+	videoInfo := &Video{
 		UserId:      userid,
 		VideoUrl:    videourl,
 		CoverUrl:    coverurl,
@@ -70,33 +63,37 @@ func UploadVideo(ctx context.Context, userid, videourl, coverurl, title, descrip
 		Description: description,
 	}
 
-	err = DB.
+	err := DB.
 		WithContext(ctx).
-		Table(env.VideoTable).
+		Table(constants.VideoTable).
 		Where("user_id=?", userid).
 		Create(&videoInfo).
 		Error
 
 	if err != nil {
-		return -1, err
+		return -1, errmsg.DatabaseError
 	}
 
 	return videoInfo.VideoId, nil
 }
 
-func UploadList(ctx context.Context, pagenum, pagesize int64, userid string) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
+func UploadList(ctx context.Context, pagenum, pagesize, userid int64) ([]*Video, int64, error) {
 
 	var videoResp []*Video
 	var err error
 	var count int64
 
+	exist, err := IsUserExist(ctx, userid)
+	if err != nil {
+		return nil, -1, err
+	}
+	if !exist {
+		return nil, -1, errmsg.UserNotExistError
+	}
+
 	err = DB.
 		WithContext(ctx).
-		Table(env.VideoTable).
+		Table(constants.VideoTable).
 		Where("user_id=?", userid).
 		Limit(int(pagesize)).
 		Offset(int((pagenum - 1) * pagesize)).
@@ -105,17 +102,13 @@ func UploadList(ctx context.Context, pagenum, pagesize int64, userid string) ([]
 		Error
 
 	if err != nil {
-		return nil, -1, err
+		return nil, -1, errmsg.DatabaseError
 	}
 
 	return videoResp, count, nil
 }
 
-func Rank(ctx context.Context, pagenum, pagesize int64, rank []string) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
+func Rank(ctx context.Context, rank []string) ([]*Video, error) {
 
 	var videoResp []*Video
 	var err error
@@ -125,24 +118,18 @@ func Rank(ctx context.Context, pagenum, pagesize int64, rank []string) ([]*Video
 		WithContext(ctx).
 		Table("video").
 		Where("video_id IN (?)", rank).
-		Limit(int(pagesize)).
-		Offset(int((pagenum - 1) * pagesize)).
 		Count(&count).
 		Find(&videoResp).
 		Error
 
 	if err != nil {
-		return nil, -1, err
+		return nil, errmsg.DatabaseError
 	}
 
-	return videoResp, count, nil
+	return videoResp, nil
 }
 
 func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error) {
-
-	if DB == nil {
-		return nil, -1, errors.New("DB object is nil")
-	}
 
 	var videoResp []*Video
 	var err error
@@ -153,19 +140,19 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 
 		err := DB.
 			WithContext(ctx).
-			Table(env.UserTable).
+			Table(constants.UserTable).
 			Select("user_id,username,avatar_url,created_at,updated_at,deleted_at").
 			Where("username = ?", req.Username).
 			First(&userinfo).
 			Error
 
 		if err != nil {
-			return nil, -1, errors.New("用户不存在")
+			return nil, -1, errmsg.UserNotExistError
 		}
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.VideoTable).
+			Table(constants.VideoTable).
 			Where("id=?", userinfo.UserId).
 			Where("created_at > ? and created_at < ?", time.Unix(*req.FromDate, 0), time.Unix(*req.ToDate, 0)).
 			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
@@ -176,7 +163,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
@@ -184,19 +171,19 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 
 		err := DB.
 			WithContext(ctx).
-			Table(env.UserTable).
+			Table(constants.UserTable).
 			Select("user_id,username,avatar_url,created_at,updated_at,deleted_at").
 			Where("username = ?", req.Username).
 			First(&userinfo).
 			Error
 
 		if err != nil {
-			return nil, -1, errors.New("用户不存在")
+			return nil, -1, errmsg.UserNotExistError
 		}
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.VideoTable).
+			Table(constants.VideoTable).
 			Where("id=?", userinfo.UserId).
 			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
 			Limit(int(req.PageSize)).
@@ -206,7 +193,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
@@ -214,7 +201,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 
 		err = DB.
 			WithContext(ctx).
-			Table(env.VideoTable).
+			Table(constants.VideoTable).
 			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
@@ -223,7 +210,7 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Error
 
 		if err != nil {
-			return nil, -1, err
+			return nil, -1, errmsg.DatabaseError
 		}
 	}
 

@@ -1,0 +1,14 @@
+linters:
+    # 启用特定的 linter
+    # https://golangci-lint.run/usage/linters/#enabled-by-default
+    enable:
+        - bodyclose
+        - goconst
+        - unconvert
+
+issues:
+
+    exclude-rules:
+        -   path: biz/handler/websocket/websocket.go
+            linters:
+                - errcheck

@@ -1,14 +1,14 @@
 package util
 
 import (
-	"fmt"
 	"net/url"
+	"work4/pkg/errmsg"
 )
 
 func ExtractSecretFromTOTPURL(totpURL string) (string, error) {
 	parsedURL, err := url.Parse(totpURL)
 	if err != nil {
-		return "", err
+		return "", errmsg.MfaGenareteError.WithMessage(err.Error())
 	}
 
 	// 获取查询参数
@@ -17,7 +17,7 @@ func ExtractSecretFromTOTPURL(totpURL string) (string, error) {
 	// 从查询参数中提取 "secret"
 	secret := queryParams.Get("secret")
 	if secret == "" {
-		return "", fmt.Errorf("secret not found in TOTP URL")
+		return "", errmsg.MfaGenareteError.WithMessage("secret not found in TOTP URL")
 	}
 
 	return secret, nil

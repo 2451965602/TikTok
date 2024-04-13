@@ -6,6 +6,7 @@ import (
 	"context"
 	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -28,13 +29,13 @@ func Star(ctx context.Context, c *app.RequestContext) {
 	err = service.NewSocialService(ctx, c).Star(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // StarList .
@@ -53,14 +54,14 @@ func StarList(ctx context.Context, c *app.RequestContext) {
 	socialResp, count, err := service.NewSocialService(ctx, c).StarList(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.UserInfoList(socialResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // FanList .
@@ -79,14 +80,14 @@ func FanList(ctx context.Context, c *app.RequestContext) {
 	socialResp, count, err := service.NewSocialService(ctx, c).FanList(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.UserInfoList(socialResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }
 
 // FriendList .
@@ -105,12 +106,12 @@ func FriendList(ctx context.Context, c *app.RequestContext) {
 	socialResp, count, err := service.NewSocialService(ctx, c).FriendList(&req)
 
 	if err != nil {
-		pack.SendFailResponse(c, err)
+		pack.BuildFailResponse(c, err)
 		return
 	}
 
-	resp.Base = pack.BuildBaseResp(nil)
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.UserInfoList(socialResp, count)
 
-	pack.SendResponse(c, resp, consts.StatusOK)
+	pack.SendResponse(c, resp)
 }

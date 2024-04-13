@@ -1,18 +1,13 @@
 package db
 
 import (
-	"errors"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 )
 
 func CreateMessage(form, to, msg string) error {
 
-	if DB == nil {
-		return errors.New("DB object is nil")
-	}
-
 	err := DB.
-		Table(env.MsgTable).
+		Table(constants.MsgTable).
 		Create(&Message{
 			FromUserId: form,
 			ToUserId:   to,
@@ -30,14 +25,10 @@ func CreateMessage(form, to, msg string) error {
 
 func GetMessage(to string) (*[]Message, error) {
 
-	if DB == nil {
-		return nil, errors.New("DB object is nil")
-	}
-
 	var msglist []Message
 
 	err := DB.
-		Table(env.MsgTable).
+		Table(constants.MsgTable).
 		Where("status = ? ", 0).
 		Where(`to_user_id = ?`, to).
 		Find(&msglist).
@@ -48,7 +39,7 @@ func GetMessage(to string) (*[]Message, error) {
 	}
 
 	for _, msg := range msglist {
-		DB.Table(env.MsgTable).
+		DB.Table(constants.MsgTable).
 			Where(`msg_id = ?`, msg.MsgId).
 			Update("status", 1)
 	}

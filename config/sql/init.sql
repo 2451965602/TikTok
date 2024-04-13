@@ -55,7 +55,7 @@ CREATE TABLE west.`social`
     `to_user_id` bigint NOT NULL,
     `status`     bigint NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE west.`messages`
 (

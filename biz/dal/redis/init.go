@@ -1,20 +1,31 @@
 package redis
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/redis/go-redis/v9"
-	"work4/bootstrap/env"
+	"work4/pkg/constants"
 )
 
-var RDB *redis.Client
+var (
+	redisDBVideo   *redis.Client
+	redisDBVideoId *redis.Client
+)
 
 func Init() {
-	var err error
 
-	opt, err := redis.ParseURL(env.RedisDSN)
-	if err != nil {
-		panic(err)
-	}
+	redisDBVideoId = redis.NewClient(&redis.Options{
+		Addr:     constants.RedisHost + ":" + constants.RedisPort,
+		Username: constants.RedisUserName,
+		Password: constants.RedisPassWord,
+		DB:       0,
+	})
 
-	RDB = redis.NewClient(opt)
+	redisDBVideo = redis.NewClient(&redis.Options{
+		Addr:     constants.RedisHost + ":" + constants.RedisPort,
+		Username: constants.RedisUserName,
+		Password: constants.RedisPassWord,
+		DB:       1,
+	})
 
+	hlog.Info("Redis连接成功")
 }

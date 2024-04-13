@@ -1,7 +1,7 @@
 namespace go model
 
 struct User {
-    1:required i64 id,
+    1:required string id,
     2:required string username,
     3:optional string password,
     4:required string avatar_url,
@@ -21,7 +21,7 @@ struct UserInfo {
 }
 
 struct Video {
-    1:required i64 id,
+    1:required string id,
     2:required string user_id,
     3:required string video_url,
     4:required string cover_url,
@@ -36,7 +36,7 @@ struct Video {
 }
 
 struct Comment {
-    1:required i64 id,
+    1:required string id,
     2:required string user_id,
     3:required string root_id,
     4:required string video_id,

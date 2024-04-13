@@ -3,11 +3,11 @@ package websocket
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/websocket"
 	"strconv"
+	"work4/biz/pack"
 	"work4/biz/service"
+	"work4/pkg/errmsg"
 )
 
 var upgrader = websocket.HertzUpgrader{}
@@ -16,7 +16,6 @@ var upgrader = websocket.HertzUpgrader{}
 // @router / [GET]
 func Chat(ctx context.Context, c *app.RequestContext) {
 	var err error
-	hlog.Infof("success")
 	err = upgrader.Upgrade(c, func(conn *websocket.Conn) {
 		uid := strconv.FormatInt(service.GetUidFormContext(c), 10)
 		if err != nil {
@@ -53,7 +52,7 @@ func Chat(ctx context.Context, c *app.RequestContext) {
 	})
 
 	if err != nil {
-		c.JSON(consts.StatusOK, `error`)
+		pack.BuildFailResponse(c, errmsg.WebsockUpgradeError.WithMessage(err.Error()))
 		return
 	}
 }

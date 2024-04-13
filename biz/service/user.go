@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"work4/biz/dal/db"
 	"work4/biz/model/user"
-	"work4/pkg/upload"
+	"work4/pkg/oss"
 )
 
 type UserService struct {
@@ -36,7 +36,7 @@ func (s *UserService) UploadAvatar(avatar *multipart.FileHeader) (*db.User, erro
 
 	userid := strconv.FormatInt(GetUidFormContext(s.c), 10)
 
-	err := upload.IsImage(avatar)
+	err := oss.IsImage(avatar)
 	if err != nil {
 		return nil, err
 	}
