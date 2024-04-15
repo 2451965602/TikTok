@@ -32,4 +32,5 @@ func Init() {
 	sqlDB.SetConnMaxLifetime(10 * time.Second)
 
 	hlog.Info("MsSQL连接成功")
+
 }

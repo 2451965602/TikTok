@@ -9,9 +9,12 @@ const (
 	AuthErrorCode
 	ParseErrorCode
 	DuplicationErrorCode
+
 	DatabaseErrorCode
 	RedisErrorCode
 	ConfigMissErrorCode
+
+	SentinelBlockCode
 
 	FileReadErrorCode
 	FilePathCreateErrorCode
@@ -45,9 +48,12 @@ const (
 	AuthErrorMsg        = "Auth Error"
 	ParseErrorMsg       = "Parse Error"
 	DuplicationErrorMsg = "Duplication Request"
-	DatabaseErrorMsg    = "Database Operation Error"
-	RedisErrorMsg       = "Redis Operation Error"
-	ConfigMissErrorMsg  = "Config Missing Error"
+
+	DatabaseErrorMsg = "Database Operation Error"
+
+	RedisErrorMsg      = "Redis Operation Error"
+	ConfigMissErrorMsg = "Config Missing Error"
+	SentinelBlockMsg   = "Request Too Frequent"
 
 	FileReadErrorMsg       = "File Read Error"
 	FilePathCreateErrorMsg = "Create File Path Error"
@@ -101,9 +107,10 @@ var (
 	AuthError        = NewErrorMessage(AuthErrorCode, AuthErrorMsg)
 	ParseError       = NewErrorMessage(ParseErrorCode, ParseErrorMsg)
 	DuplicationError = NewErrorMessage(DuplicationErrorCode, DuplicationErrorMsg)
-	DatabaseError    = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
-	RedisError       = NewErrorMessage(RedisErrorCode, RedisErrorMsg)
-	ConfigMissError  = NewErrorMessage(ConfigMissErrorCode, ConfigMissErrorMsg)
+
+	DatabaseError   = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
+	RedisError      = NewErrorMessage(RedisErrorCode, RedisErrorMsg)
+	ConfigMissError = NewErrorMessage(ConfigMissErrorCode, ConfigMissErrorMsg)
 
 	FileReadError       = NewErrorMessage(FileReadErrorCode, FileReadErrorMsg)
 	FilePathCreateError = NewErrorMessage(FilePathCreateErrorCode, FilePathCreateErrorMsg)

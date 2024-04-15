@@ -17,6 +17,9 @@ var (
 	QiNiuAccessKey string
 	QiNiuSecretKey string
 	QiNiuDomain    string
+
+	SentinelThreshold        float64
+	SentinelStatIntervalInMs uint32
 )
 
 const (

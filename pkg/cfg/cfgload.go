@@ -5,6 +5,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"work4/biz/dal"
+	"work4/biz/middleware/sentinel"
 	"work4/pkg/constants"
 	"work4/pkg/errmsg"
 )
@@ -18,6 +19,7 @@ func Init() error {
 	if err := Config.ReadInConfig(); err != nil {
 		return errmsg.ConfigMissError
 	}
+
 	loadConfig()
 
 	go func() {
@@ -50,4 +52,8 @@ func loadConfig() {
 	constants.QiNiuAccessKey = Config.GetString("QiNiu.AccessKey")
 	constants.QiNiuSecretKey = Config.GetString("QiNiu.SecretKey")
 	constants.QiNiuDomain = Config.GetString("QiNiu.Domain")
+
+	constants.SentinelThreshold = Config.GetFloat64("Sentinel.Threshold")
+	constants.SentinelStatIntervalInMs = Config.GetUint32("Sentinel.StatIntervalInMs")
+	sentinel.Init()
 }

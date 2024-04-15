@@ -4,7 +4,7 @@ package user
 
 import (
 	"context"
-	"work4/biz/middleware"
+	"work4/biz/middleware/jwt"
 	"work4/biz/pack"
 	"work4/biz/service"
 	"work4/pkg/errmsg"
@@ -58,8 +58,8 @@ func Login(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	middleware.AccessTokenJwtMiddleware.LoginHandler(ctx, c)
-	middleware.RefreshTokenJwtMiddleware.LoginHandler(ctx, c)
+	jwt.AccessTokenJwtMiddleware.LoginHandler(ctx, c)
+	jwt.RefreshTokenJwtMiddleware.LoginHandler(ctx, c)
 
 	resp.Base = pack.BuildBaseResp(errmsg.NoError)
 	resp.Data = pack.UserInfoDetail(userResp)

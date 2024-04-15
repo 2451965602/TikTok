@@ -3,11 +3,16 @@
 package main
 
 import (
+	"context"
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"work4/biz/middleware"
+	"github.com/cloudwego/hertz/pkg/common/utils"
+	"github.com/hertz-contrib/opensergo/sentinel/adapter"
+	"work4/biz/middleware/jwt"
 	"work4/biz/router/websock"
 	"work4/pkg/cfg"
+	"work4/pkg/errmsg"
 )
 
 func Init() error {
@@ -15,7 +20,7 @@ func Init() error {
 	if err != nil {
 		return err
 	}
-	middleware.Init()
+	jwt.Init()
 
 	return nil
 }
@@ -29,8 +34,21 @@ func main() {
 	}
 
 	h := server.Default(server.WithHostPorts("0.0.0.0:10001"))
-	ws := server.Default(server.WithHostPorts("0.0.0.0:10000"))
+	h.Use(adapter.SentinelServerMiddleware(
+		adapter.WithServerResourceExtractor(func(c context.Context, ctx *app.RequestContext) string {
+			return "default"
+		}),
+		adapter.WithServerBlockFallback(func(c context.Context, ctx *app.RequestContext) {
+			ctx.AbortWithStatusJSON(400, utils.H{
+				"base": utils.H{
+					"code": errmsg.SentinelBlockCode,
+					"msg":  errmsg.SentinelBlockMsg,
+				},
+			})
+		}),
+	))
 
+	ws := server.Default(server.WithHostPorts("0.0.0.0:10000"))
 	ws.NoHijackConnPool = true
 
 	register(h)
