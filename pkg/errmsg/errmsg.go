@@ -9,6 +9,7 @@ const (
 	AuthErrorCode
 	ParseErrorCode
 	DuplicationErrorCode
+	IllegalParamErrorCode
 
 	DatabaseErrorCode
 	RedisErrorCode
@@ -44,10 +45,11 @@ const (
 const (
 	NoErrorMsg = "OK"
 
-	ServiceErrorMsg     = "Service Error"
-	AuthErrorMsg        = "Auth Error"
-	ParseErrorMsg       = "Parse Error"
-	DuplicationErrorMsg = "Duplication Request"
+	ServiceErrorMsg      = "Service Error"
+	AuthErrorMsg         = "Auth Error"
+	ParseErrorMsg        = "Parse Error"
+	DuplicationErrorMsg  = "Duplication Request"
+	IllegalParamErrorMsg = "Illegal Param"
 
 	DatabaseErrorMsg = "Database Operation Error"
 
@@ -103,10 +105,11 @@ func NewErrorMessage(code int64, msg string) ErrorMessage {
 var (
 	NoError = NewErrorMessage(NoErrorCode, NoErrorMsg)
 
-	ServiceError     = NewErrorMessage(ServiceErrCode, ServiceErrorMsg)
-	AuthError        = NewErrorMessage(AuthErrorCode, AuthErrorMsg)
-	ParseError       = NewErrorMessage(ParseErrorCode, ParseErrorMsg)
-	DuplicationError = NewErrorMessage(DuplicationErrorCode, DuplicationErrorMsg)
+	ServiceError      = NewErrorMessage(ServiceErrCode, ServiceErrorMsg)
+	AuthError         = NewErrorMessage(AuthErrorCode, AuthErrorMsg)
+	ParseError        = NewErrorMessage(ParseErrorCode, ParseErrorMsg)
+	DuplicationError  = NewErrorMessage(DuplicationErrorCode, DuplicationErrorMsg)
+	IllegalParamError = NewErrorMessage(IllegalParamErrorCode, IllegalParamErrorMsg)
 
 	DatabaseError   = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
 	RedisError      = NewErrorMessage(RedisErrorCode, RedisErrorMsg)

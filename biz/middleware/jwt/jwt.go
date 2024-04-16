@@ -3,7 +3,6 @@ package jwt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/hertz-contrib/jwt"
 	"log"
@@ -38,11 +37,13 @@ func AccessTokenJwt() {
 					AccessTokenJwtMiddleware.IdentityKey: v,
 				}
 			}
+
 			return jwt.MapClaims{}
 		},
 
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {
 			claims := jwt.ExtractClaims(ctx, c)
+
 			return claims[AccessTokenJwtMiddleware.IdentityKey]
 		},
 
@@ -64,6 +65,7 @@ func AccessTokenJwt() {
 				return nil, err
 			}
 			c.Set("userid", users.UserId)
+
 			return users.UserId, nil
 		},
 	})
@@ -92,6 +94,7 @@ func RefreshTokenJwt() {
 
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {
 			claims := jwt.ExtractClaims(ctx, c)
+
 			return claims[RefreshTokenJwtMiddleware.IdentityKey]
 		},
 
@@ -106,8 +109,9 @@ func RefreshTokenJwt() {
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) {
 			uid, exist := c.Get("userid")
 			if !exist {
-				return nil, errors.New("AuthenticatorError")
+				return nil, err
 			}
+
 			return uid, nil
 
 		},
@@ -155,6 +159,7 @@ func IsAccessTokenAvailable(ctx context.Context, c *app.RequestContext) bool {
 	if !AccessTokenJwtMiddleware.Authorizator(identity, ctx, c) {
 		return false
 	}
+
 	return true
 
 }
@@ -193,6 +198,7 @@ func IsRefreshTokenAvailable(ctx context.Context, c *app.RequestContext) bool {
 	if !RefreshTokenJwtMiddleware.Authorizator(identity, ctx, c) {
 		return false
 	}
+
 	return true
 }
 

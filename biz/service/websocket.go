@@ -79,6 +79,7 @@ func (s ChatService) SendMessage(content []byte) error {
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -101,6 +102,7 @@ func (s ChatService) ReadOfflineMessage() error {
 			return errmsg.WeBsockChatReadError
 		}
 	}
+
 	return nil
 }
 

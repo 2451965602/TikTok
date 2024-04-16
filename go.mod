@@ -1,6 +1,6 @@
 module work4
 
-go 1.21.3
+go 1.22.2
 
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 

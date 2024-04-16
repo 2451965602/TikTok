@@ -25,6 +25,7 @@ func IsImage(data *multipart.FileHeader) error {
 	if filetype.IsImage(buffer) {
 		return nil
 	}
+
 	return errmsg.IsNotImageError
 }
 
@@ -39,6 +40,7 @@ func IsVideo(data *multipart.FileHeader) error {
 	if filetype.IsVideo(buffer) {
 		return nil
 	}
+
 	return errmsg.IsNotVideoError
 }
 
@@ -69,6 +71,7 @@ func SaveFile(data *multipart.FileHeader, storePath, fileName string) (err error
 		_ = src.Close()
 	}(src)
 	_, err = io.Copy(dist, src)
+
 	return
 }
 

@@ -10,6 +10,7 @@ import (
 func User(data *db.User) *model.User {
 	create := strconv.FormatInt(data.CreatedAt.Unix(), 10)
 	update := strconv.FormatInt(data.UpdatedAt.Unix(), 10)
+
 	return &model.User{
 		ID:        strconv.FormatInt(data.UserId, 10),
 		Username:  data.Username,

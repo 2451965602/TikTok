@@ -20,6 +20,7 @@ func Chat(ctx context.Context, c *app.RequestContext) {
 		uid := strconv.FormatInt(service.GetUidFormContext(c), 10)
 		if err != nil {
 			conn.WriteMessage(websocket.TextMessage, []byte("BadConnection"))
+
 			return
 		}
 		conn.WriteMessage(websocket.TextMessage, []byte(`Welcome, `+uid))
@@ -28,12 +29,14 @@ func Chat(ctx context.Context, c *app.RequestContext) {
 
 		if err := s.Login(); err != nil {
 			conn.WriteMessage(websocket.TextMessage, []byte("BadConnection"))
+
 			return
 		}
 		defer s.Logout()
 
 		if err := s.ReadOfflineMessage(); err != nil {
 			conn.WriteMessage(websocket.TextMessage, []byte("BadConnection"))
+
 			return
 		}
 
@@ -41,11 +44,13 @@ func Chat(ctx context.Context, c *app.RequestContext) {
 			_, message, err := conn.ReadMessage()
 			if err != nil {
 				conn.WriteMessage(websocket.TextMessage, []byte("BadConnection"))
+
 				return
 			}
 
 			if err := s.SendMessage(message); err != nil {
 				conn.WriteMessage(websocket.TextMessage, []byte("BadConnection"))
+
 				return
 			}
 		}
@@ -53,6 +58,7 @@ func Chat(ctx context.Context, c *app.RequestContext) {
 
 	if err != nil {
 		pack.BuildFailResponse(c, errmsg.WebsockUpgradeError.WithMessage(err.Error()))
+
 		return
 	}
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	uuid "github.com/satori/go.uuid"
 	"mime/multipart"
@@ -9,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"work4/pkg/constants"
+	"work4/pkg/errmsg"
 
 	"work4/pkg/oss"
 )
@@ -19,6 +19,7 @@ func GetUidFormContext(c *app.RequestContext) int64 {
 	if err != nil {
 		panic(err)
 	}
+
 	return userid
 }
 
@@ -35,7 +36,7 @@ func convertToInt64(value interface{}) (int64, error) {
 	case float64:
 		return int64(v), nil
 	default:
-		return 0, fmt.Errorf("无法转换为int64，类型为 %T", value)
+		return 0, errmsg.ParseError
 	}
 }
 

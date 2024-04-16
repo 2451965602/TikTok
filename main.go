@@ -39,7 +39,7 @@ func main() {
 			return "default"
 		}),
 		adapter.WithServerBlockFallback(func(c context.Context, ctx *app.RequestContext) {
-			ctx.AbortWithStatusJSON(400, utils.H{
+			ctx.AbortWithStatusJSON(429, utils.H{
 				"base": utils.H{
 					"code": errmsg.SentinelBlockCode,
 					"msg":  errmsg.SentinelBlockMsg,

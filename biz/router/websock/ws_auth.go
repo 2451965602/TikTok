@@ -16,6 +16,7 @@ func tokenAuthFunc() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		if !jwt.IsAccessTokenAvailable(ctx, c) {
 			c.Abort()
+
 			return
 		}
 		c.Next(ctx)

@@ -20,6 +20,7 @@ func DoubleTokenAuthFunc() app.HandlerFunc {
 			if !jwt.IsRefreshTokenAvailable(ctx, c) {
 				pack.BuildFailResponse(c, errmsg.AuthError)
 				c.Abort()
+
 				return
 			}
 			jwt.GenerateAccessToken(c)

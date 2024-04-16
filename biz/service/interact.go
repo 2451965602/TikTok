@@ -21,9 +21,7 @@ func NewInteractService(ctx context.Context, c *app.RequestContext) *InteractSer
 
 func (s *InteractService) Like(req *interact.LikeRequest) error {
 
-	var (
-		err error
-	)
+	var err error
 
 	if req.VideoID != nil && req.CommentID == nil {
 
@@ -96,6 +94,7 @@ func (s *InteractService) LikeList(req *interact.LikeListRequest) ([]*db.Video, 
 		v.CommentCount = count.CommentCount
 		resp = append(resp, v)
 	}
+
 	return resp, num, nil
 }
 

@@ -38,12 +38,14 @@ func BuildBaseResp(err errmsg.ErrorMessage) *model.BaseResp {
 func BuildFailResponse(c *app.RequestContext, err error) {
 	if err == nil {
 		SendFailResponse(c, BuildBaseResp(errmsg.NoError))
+
 		return
 	}
 
 	e := errmsg.ErrorMessage{}
 	if errors.As(err, &e) {
 		SendFailResponse(c, BuildBaseResp(e))
+
 		return
 	}
 

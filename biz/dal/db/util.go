@@ -23,6 +23,7 @@ func IsVideoExist(ctx context.Context, videoid int64) (bool, error) {
 	} else if err != nil {
 		return false, errmsg.DatabaseError.WithMessage(err.Error())
 	}
+
 	return true, nil
 }
 
@@ -41,6 +42,7 @@ func IsUserExist(ctx context.Context, userid int64) (bool, error) {
 	} else if err != nil {
 		return false, errmsg.DatabaseError.WithMessage(err.Error())
 	}
+
 	return true, nil
 }
 
@@ -59,6 +61,7 @@ func IsUserNameExist(ctx context.Context, username string) (bool, error) {
 	} else if err != nil {
 		return false, errmsg.DatabaseError.WithMessage(err.Error())
 	}
+
 	return true, nil
 }
 
@@ -77,5 +80,6 @@ func IsCommentExist(ctx context.Context, commentid int64) (bool, error) {
 	} else if err != nil {
 		return false, errmsg.DatabaseError.WithMessage(err.Error())
 	}
+
 	return true, nil
 }
