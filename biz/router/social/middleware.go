@@ -17,22 +17,7 @@ func _followerMw() []app.HandlerFunc {
 	return nil
 }
 
-func _commentMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _friendsMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _commentlistMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _likeMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
