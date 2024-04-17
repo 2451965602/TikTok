@@ -4,7 +4,7 @@ package user
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/router/auth"
+	"tiktok/biz/router/auth"
 )
 
 func rootMw() []app.HandlerFunc {
@@ -58,6 +58,11 @@ func _avatarMw() []app.HandlerFunc {
 }
 
 func _uploadMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _mfastatusMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

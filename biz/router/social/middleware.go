@@ -4,7 +4,7 @@ package social
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/router/auth"
+	"tiktok/biz/router/auth"
 )
 
 func rootMw() []app.HandlerFunc {

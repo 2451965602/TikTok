@@ -2,9 +2,9 @@ package pack
 
 import (
 	"strconv"
-	"work4/biz/dal/db"
-	"work4/biz/model/model"
-	"work4/pkg/constants"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/model/model"
+	"tiktok/pkg/constants"
 )
 
 func User(data *db.User) *model.User {

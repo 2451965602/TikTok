@@ -4,12 +4,12 @@ package video
 
 import (
 	"context"
-	"work4/biz/pack"
-	"work4/biz/service"
-	"work4/pkg/errmsg"
+	"tiktok/biz/pack"
+	"tiktok/biz/service"
+	"tiktok/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/model/video"
+	"tiktok/biz/model/video"
 )
 
 // Upload .

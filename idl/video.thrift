@@ -18,9 +18,9 @@ struct FeedResponse{
 //投稿
 struct UploadRequest{
     1:required string title (api.form="title"),
-    2:required binary coverdata (api.form="coverdata"),
-    3:required binary videodata (api.form="videodata"),
-    4:required string description (api.form="description"),
+//    2:required binary coverdata (api.form="coverdata"),
+//    3:required binary videodata (api.form="videodata"),
+    2:required string description (api.form="description"),
 }
 
 struct UploadResponse{

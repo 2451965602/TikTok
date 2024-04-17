@@ -3,7 +3,7 @@ package sentinel
 import (
 	sentinel "github.com/alibaba/sentinel-golang/api"
 	"github.com/alibaba/sentinel-golang/core/flow"
-	"work4/pkg/constants"
+	"tiktok/pkg/constants"
 )
 
 func Init() {

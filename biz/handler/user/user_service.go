@@ -4,13 +4,13 @@ package user
 
 import (
 	"context"
-	"work4/biz/middleware/jwt"
-	"work4/biz/pack"
-	"work4/biz/service"
-	"work4/pkg/errmsg"
+	"tiktok/biz/middleware/jwt"
+	"tiktok/biz/pack"
+	"tiktok/biz/service"
+	"tiktok/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/model/user"
+	"tiktok/biz/model/user"
 )
 
 // Register .
@@ -160,6 +160,31 @@ func MFA(ctx context.Context, c *app.RequestContext) {
 	resp := new(user.MFABindResponse)
 
 	err = service.NewUserService(ctx, c).MFABind(&req)
+
+	if err != nil {
+		pack.BuildFailResponse(c, err)
+		return
+	}
+
+	resp.Base = pack.BuildBaseResp(errmsg.NoError)
+
+	pack.SendResponse(c, resp)
+}
+
+// MFAStatus .
+// @router /auth/mfa/status [POST]
+func MFAStatus(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.MFAStatusRequest
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		pack.BuildFailResponse(c, err)
+		return
+	}
+
+	resp := new(user.MFAStatusResponse)
+
+	err = service.NewUserService(ctx, c).MFAStatus(&req)
 
 	if err != nil {
 		pack.BuildFailResponse(c, err)

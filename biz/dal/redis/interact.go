@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/redis/go-redis/v9"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/errmsg"
 )
 
 var LikeToIdKey = "VideoLike"

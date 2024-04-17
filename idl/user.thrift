@@ -63,6 +63,15 @@ struct MFABindRequest{
 struct MFABindResponse{
     1:model.BaseResp base,
 }
+//关闭多因素身份认证(MFA)
+struct MFAStatusRequest{
+    1:required string code (api.form="code"),
+    2:required string action_type (api.form="action_type"),
+}
+
+struct MFAStatusResponse{
+    1:model.BaseResp base,
+}
 
 
 service UserService{
@@ -72,4 +81,5 @@ service UserService{
     UploadResponse Upload(1:UploadRequest req)(api.put="/user/avatar/upload")
     MFAGetResponse MFAGet(1:MFAGetRequest req)(api.get="/auth/mfa/qrcode")
     MFABindResponse MFA(1:MFABindRequest req)(api.post="/auth/mfa/bind")
+    MFAStatusResponse MFAStatus(1:MFAStatusRequest req)(api.post="/auth/mfa/status")
 }

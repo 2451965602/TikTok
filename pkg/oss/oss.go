@@ -10,8 +10,8 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
 
 func IsImage(data *multipart.FileHeader) error {

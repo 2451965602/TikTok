@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/redis/go-redis/v9"
+	"tiktok/biz/dal/db"
+	"tiktok/pkg/errmsg"
 	"time"
-	"work4/biz/dal/db"
-	"work4/pkg/errmsg"
 )
 
 var VideoIdKey = "VideoId"
@@ -52,6 +52,15 @@ func UpdateIdInRank(ctx context.Context, videoid string) error {
 
 	return nil
 
+}
+
+func GetAllVideoIds(ctx context.Context) ([]string, error) {
+	videoIds, err := redisDBVideoId.ZRange(ctx, VideoIdKey, 0, -1).Result()
+	if err != nil {
+		return nil, errmsg.RedisError.WithMessage(err.Error())
+	}
+
+	return videoIds, nil
 }
 
 func IdRankList(ctx context.Context) ([]string, error) {

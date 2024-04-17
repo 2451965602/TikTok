@@ -5,8 +5,8 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"strconv"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
 
 func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) (err error) {
@@ -207,21 +207,34 @@ func CreatComment(ctx context.Context, userid, id, content, sort string) error {
 	return nil
 }
 
-func CommentList(ctx context.Context, videoid string, pagenum, pagesize int64) ([]*Comment, int64, error) {
+func CommentList(ctx context.Context, id string, pagenum, pagesize int64, sort string) ([]*Comment, int64, error) {
 
 	var CommentResp []*Comment
 	var err error
 	var count int64
 
-	err = DB.
-		WithContext(ctx).
-		Table(constants.CommentTable).
-		Where("video_id=?", videoid).
-		Limit(int(pagesize)).
-		Offset(int((pagenum - 1) * pagesize)).
-		Count(&count).
-		Find(&CommentResp).
-		Error
+	if sort == "video" {
+		err = DB.
+			WithContext(ctx).
+			Table(constants.CommentTable).
+			Where("video_id=?", id).
+			Limit(int(pagesize)).
+			Offset(int((pagenum - 1) * pagesize)).
+			Count(&count).
+			Find(&CommentResp).
+			Error
+
+	} else {
+		err = DB.
+			WithContext(ctx).
+			Table(constants.CommentTable).
+			Where("root_id=?", id).
+			Limit(int(pagesize)).
+			Offset(int((pagenum - 1) * pagesize)).
+			Count(&count).
+			Find(&CommentResp).
+			Error
+	}
 
 	if err != nil {
 		return nil, -1, errmsg.DatabaseError.WithMessage(err.Error())

@@ -1,4 +1,4 @@
-module work4
+module tiktok
 
 go 1.22.2
 

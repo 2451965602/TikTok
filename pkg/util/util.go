@@ -2,7 +2,7 @@ package util
 
 import (
 	"net/url"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/errmsg"
 )
 
 func ExtractSecretFromTOTPURL(totpURL string) (string, error) {

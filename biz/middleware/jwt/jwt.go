@@ -6,12 +6,12 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/hertz-contrib/jwt"
 	"log"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/model/user"
+	"tiktok/biz/pack"
+	"tiktok/biz/service"
+	"tiktok/pkg/errmsg"
 	"time"
-	"work4/biz/dal/db"
-	"work4/biz/model/user"
-	"work4/biz/pack"
-	"work4/biz/service"
-	"work4/pkg/errmsg"
 )
 
 var (

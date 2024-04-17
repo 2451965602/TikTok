@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
-	"work4/biz/model/model"
+	"tiktok/biz/model/model"
 )
 
 // 关注操作

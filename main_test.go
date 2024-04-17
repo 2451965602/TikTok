@@ -9,8 +9,8 @@ import (
 	"io"
 	"log"
 	"testing"
-	"work4/biz/middleware/jwt"
-	"work4/pkg/cfg"
+	"tiktok/biz/middleware/jwt"
+	"tiktok/pkg/cfg"
 )
 
 const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTA5MzA5MzgsIm9yaWdfaWF0IjoxNzEwNjcxNzM4LCJ1c2VyaWQiOjEwMDAwfQ.Dfaq52tUIY35UTF3EUo0Iw5cBFZwgg-rwhJZtb0Zahw`

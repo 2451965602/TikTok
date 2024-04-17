@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
 
 func QuerySocialStatus(ctx context.Context, userID int64) (Social, error) {

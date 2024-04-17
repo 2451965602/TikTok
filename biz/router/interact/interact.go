@@ -4,7 +4,7 @@ package interact
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	interact "work4/biz/handler/interact"
+	interact "tiktok/biz/handler/interact"
 )
 
 /*

@@ -5,9 +5,9 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/hertz-contrib/websocket"
 	"strconv"
-	"work4/biz/pack"
-	"work4/biz/service"
-	"work4/pkg/errmsg"
+	"tiktok/biz/pack"
+	"tiktok/biz/service"
+	"tiktok/pkg/errmsg"
 )
 
 var upgrader = websocket.HertzUpgrader{}

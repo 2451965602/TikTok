@@ -7,10 +7,10 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 
-	"work4/pkg/oss"
+	"tiktok/pkg/oss"
 )
 
 func GetUidFormContext(c *app.RequestContext) int64 {

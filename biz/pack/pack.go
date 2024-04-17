@@ -5,8 +5,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"work4/biz/model/model"
-	"work4/pkg/errmsg"
+	"tiktok/biz/model/model"
+	"tiktok/pkg/errmsg"
 )
 
 type Base struct {
@@ -23,7 +23,7 @@ func SendResponse(c *app.RequestContext, data interface{}) {
 }
 
 func SendFailResponse(c *app.RequestContext, data *model.BaseResp) {
-	c.JSON(consts.StatusOK, utils.H{
+	c.JSON(consts.StatusBadRequest, utils.H{
 		"base": data,
 	})
 }

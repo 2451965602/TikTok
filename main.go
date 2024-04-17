@@ -9,10 +9,11 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/hertz-contrib/opensergo/sentinel/adapter"
-	"work4/biz/middleware/jwt"
-	"work4/biz/router/websock"
-	"work4/pkg/cfg"
-	"work4/pkg/errmsg"
+	"tiktok/biz/middleware/jwt"
+	"tiktok/biz/router/websock"
+	"tiktok/pkg/cfg"
+	"tiktok/pkg/errmsg"
+	"tiktok/pkg/sync"
 )
 
 func Init() error {
@@ -21,7 +22,7 @@ func Init() error {
 		return err
 	}
 	jwt.Init()
-
+	go sync.StartSync()
 	return nil
 }
 

@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
-	"work4/biz/model/model"
+	"tiktok/biz/model/model"
 )
 
 // 点赞操作
@@ -1242,17 +1242,32 @@ func (p *CommentResponse) String() string {
 
 // 评论列表
 type CommentListRequest struct {
-	VideoID  string `thrift:"video_id,1,required" json:"video_id,required" query:"video_id,required"`
-	PageSize int64  `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64  `thrift:"page_num,3,required" json:"page_num,required" query:"page_num,required"`
+	VideoID   *string `thrift:"video_id,1,optional" json:"video_id,omitempty" query:"video_id"`
+	CommentID *string `thrift:"comment_id,2,optional" json:"comment_id,omitempty" query:"comment_id"`
+	PageSize  int64   `thrift:"page_size,3,required" json:"page_size,required" query:"page_size,required"`
+	PageNum   int64   `thrift:"page_num,4,required" json:"page_num,required" query:"page_num,required"`
 }
 
 func NewCommentListRequest() *CommentListRequest {
 	return &CommentListRequest{}
 }
 
+var CommentListRequest_VideoID_DEFAULT string
+
 func (p *CommentListRequest) GetVideoID() (v string) {
-	return p.VideoID
+	if !p.IsSetVideoID() {
+		return CommentListRequest_VideoID_DEFAULT
+	}
+	return *p.VideoID
+}
+
+var CommentListRequest_CommentID_DEFAULT string
+
+func (p *CommentListRequest) GetCommentID() (v string) {
+	if !p.IsSetCommentID() {
+		return CommentListRequest_CommentID_DEFAULT
+	}
+	return *p.CommentID
 }
 
 func (p *CommentListRequest) GetPageSize() (v int64) {
@@ -1265,15 +1280,23 @@ func (p *CommentListRequest) GetPageNum() (v int64) {
 
 var fieldIDToName_CommentListRequest = map[int16]string{
 	1: "video_id",
-	2: "page_size",
-	3: "page_num",
+	2: "comment_id",
+	3: "page_size",
+	4: "page_num",
+}
+
+func (p *CommentListRequest) IsSetVideoID() bool {
+	return p.VideoID != nil
+}
+
+func (p *CommentListRequest) IsSetCommentID() bool {
+	return p.CommentID != nil
 }
 
 func (p *CommentListRequest) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
-	var issetVideoID bool = false
 	var issetPageSize bool = false
 	var issetPageNum bool = false
 
@@ -1296,22 +1319,29 @@ func (p *CommentListRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetVideoID = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		case 2:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetPageSize = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		case 3:
 			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetPageSize = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 4:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
 				issetPageNum = true
@@ -1331,18 +1361,13 @@ func (p *CommentListRequest) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
-	if !issetVideoID {
-		fieldId = 1
-		goto RequiredFieldNotSetError
-	}
-
 	if !issetPageSize {
-		fieldId = 2
+		fieldId = 3
 		goto RequiredFieldNotSetError
 	}
 
 	if !issetPageNum {
-		fieldId = 3
+		fieldId = 4
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -1368,11 +1393,20 @@ func (p *CommentListRequest) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.VideoID = v
+		p.VideoID = &v
 	}
 	return nil
 }
 func (p *CommentListRequest) ReadField2(iprot thrift.TProtocol) error {
+
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.CommentID = &v
+	}
+	return nil
+}
+func (p *CommentListRequest) ReadField3(iprot thrift.TProtocol) error {
 
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
@@ -1381,7 +1415,7 @@ func (p *CommentListRequest) ReadField2(iprot thrift.TProtocol) error {
 	}
 	return nil
 }
-func (p *CommentListRequest) ReadField3(iprot thrift.TProtocol) error {
+func (p *CommentListRequest) ReadField4(iprot thrift.TProtocol) error {
 
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
@@ -1409,6 +1443,10 @@ func (p *CommentListRequest) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 3
 			goto WriteFieldError
 		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
+			goto WriteFieldError
+		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -1428,14 +1466,16 @@ WriteStructEndError:
 }
 
 func (p *CommentListRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("video_id", thrift.STRING, 1); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.VideoID); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
+	if p.IsSetVideoID() {
+		if err = oprot.WriteFieldBegin("video_id", thrift.STRING, 1); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteString(*p.VideoID); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
 	}
 	return nil
 WriteFieldBeginError:
@@ -1445,7 +1485,26 @@ WriteFieldEndError:
 }
 
 func (p *CommentListRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("page_size", thrift.I64, 2); err != nil {
+	if p.IsSetCommentID() {
+		if err = oprot.WriteFieldBegin("comment_id", thrift.STRING, 2); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteString(*p.CommentID); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *CommentListRequest) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("page_size", thrift.I64, 3); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteI64(p.PageSize); err != nil {
@@ -1456,13 +1515,13 @@ func (p *CommentListRequest) writeField2(oprot thrift.TProtocol) (err error) {
 	}
 	return nil
 WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
 }
 
-func (p *CommentListRequest) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("page_num", thrift.I64, 3); err != nil {
+func (p *CommentListRequest) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("page_num", thrift.I64, 4); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteI64(p.PageNum); err != nil {
@@ -1473,9 +1532,9 @@ func (p *CommentListRequest) writeField3(oprot thrift.TProtocol) (err error) {
 	}
 	return nil
 WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
 WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
 func (p *CommentListRequest) String() string {

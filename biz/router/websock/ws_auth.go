@@ -3,7 +3,7 @@ package websock
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/middleware/jwt"
+	"tiktok/biz/middleware/jwt"
 )
 
 func _wsAuth() []app.HandlerFunc {

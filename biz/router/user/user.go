@@ -4,7 +4,7 @@ package user
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	user "work4/biz/handler/user"
+	user "tiktok/biz/handler/user"
 )
 
 /*
@@ -23,6 +23,7 @@ func Register(r *server.Hertz) {
 			_mfa := _auth.Group("/mfa", _mfaMw()...)
 			_mfa.POST("/bind", append(_mfa0Mw(), user.MFA)...)
 			_mfa.GET("/qrcode", append(_mfagetMw(), user.MFAGet)...)
+			_mfa.POST("/status", append(_mfastatusMw(), user.MFAStatus)...)
 		}
 	}
 	{

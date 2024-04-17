@@ -38,9 +38,10 @@ struct CommentResponse{
 
 //评论列表
 struct CommentListRequest{
-    1:required string video_id (api.query="video_id"),
-    2:required i64 page_size (api.query="page_size"),
-    3:required i64 page_num (api.query="page_num"),
+    1:optional string video_id (api.query="video_id"),
+    2:optional string comment_id (api.query="comment_id"),
+    3:required i64 page_size (api.query="page_size"),
+    4:required i64 page_num (api.query="page_num"),
 }
 
 struct CommentListResponse{

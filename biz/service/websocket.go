@@ -5,11 +5,12 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/hertz-contrib/websocket"
 	"strconv"
+	"sync"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 	"time"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
 
-	"work4/biz/dal/db"
+	"tiktok/biz/dal/db"
 )
 
 type ChatService struct {
@@ -23,7 +24,10 @@ type _user struct {
 	conn     *websocket.Conn
 }
 
-var userMap = make(map[string]*_user)
+var (
+	userMapMutex sync.RWMutex
+	userMap      = make(map[string]*_user)
+)
 
 func NewChatService(ctx context.Context, c *app.RequestContext, conn *websocket.Conn) *ChatService {
 	return &ChatService{ctx: ctx, c: c, conn: conn}
@@ -36,14 +40,18 @@ func (s ChatService) Login() error {
 	if err != nil {
 		return err
 	}
+	userMapMutex.Lock()
 	userMap[uid] = &_user{conn: s.conn, username: user.Username}
+	userMapMutex.Unlock()
 
 	return nil
 }
 
 func (s ChatService) Logout() {
 	uid := strconv.FormatInt(GetUidFormContext(s.c), 10)
-	userMap[uid] = nil
+	userMapMutex.Lock()
+	delete(userMap, uid)
+	userMapMutex.Unlock()
 }
 
 func (s ChatService) SendMessage(content []byte) error {
@@ -63,7 +71,10 @@ func (s ChatService) SendMessage(content []byte) error {
 		return errmsg.UserNotExistError
 	}
 
+	userMapMutex.RLock()
 	toConn := userMap[to]
+	userMapMutex.RUnlock()
+
 	switch toConn {
 	case nil: // 离线
 		{

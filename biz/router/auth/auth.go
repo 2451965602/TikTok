@@ -3,9 +3,9 @@ package auth
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/middleware/jwt"
-	"work4/biz/pack"
-	"work4/pkg/errmsg"
+	"tiktok/biz/middleware/jwt"
+	"tiktok/biz/pack"
+	"tiktok/pkg/errmsg"
 )
 
 func Auth() []app.HandlerFunc {

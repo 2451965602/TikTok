@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"work4/biz/dal"
-	"work4/biz/middleware/sentinel"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
+	"strings"
+	"tiktok/biz/dal"
+	"tiktok/biz/middleware/sentinel"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
 
 var Config *viper.Viper
@@ -19,6 +20,10 @@ func Init() error {
 	if err := Config.ReadInConfig(); err != nil {
 		return errmsg.ConfigMissError
 	}
+
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("tiktok")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	loadConfig()
 

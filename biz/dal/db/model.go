@@ -11,6 +11,7 @@ type User struct {
 	Password  string
 	AvatarUrl string
 	OptSecret string
+	MfaStatus string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -83,4 +84,10 @@ type Message struct {
 	Content    string
 	CreatedAt  time.Time
 	Status     int64
+}
+
+type Counts struct {
+	VisitCount   int64
+	LikeCount    int64
+	CommentCount int64
 }

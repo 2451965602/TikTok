@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"strconv"
-	"work4/biz/dal/db"
-	"work4/biz/model/social"
-	"work4/pkg/errmsg"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/model/social"
+	"tiktok/pkg/errmsg"
 )
 
 type SocialService struct {

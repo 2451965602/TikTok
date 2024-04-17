@@ -1,7 +1,7 @@
 package db
 
 import (
-	"work4/pkg/constants"
+	"tiktok/pkg/constants"
 )
 
 func CreateMessage(form, to, msg string) error {
