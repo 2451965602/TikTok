@@ -30,7 +30,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 			return errmsg.ParseError
 		}
 
-		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), VideoID, req.ActionType, "video")
+		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), VideoID, req.ActionType, "Video")
 		if err != nil {
 			return err
 		}
@@ -42,7 +42,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 			return errmsg.ParseError
 		}
 
-		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), CommentID, req.ActionType, "comment")
+		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), CommentID, req.ActionType, "Comment")
 		if err != nil {
 			return err
 		}

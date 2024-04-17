@@ -13,7 +13,7 @@ func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) 
 
 	var LikeResp *Like
 
-	if sort == "video" {
+	if sort == "Video" {
 
 		exist, err := IsVideoExist(ctx, id)
 		if err != nil {
@@ -29,7 +29,7 @@ func CreateLike(ctx context.Context, userid, id int64, actiontype, sort string) 
 			RootId:  0,
 		}
 
-	} else if sort == "comment" {
+	} else if sort == "Comment" {
 
 		exist, err := IsCommentExist(ctx, id)
 		if err != nil {

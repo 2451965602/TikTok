@@ -1,9 +1,9 @@
 ## West2-Online(Golang 下半年综合考核)
 
 ### 程序运行
-启动程序请参考,[启动程序](.doc/launch.md)
+启动程序请参考,[启动程序](docs/launch.md)
 
-环境变量及配置文件请参考 [配置](.doc/config.md)。
+环境变量及配置文件请参考 [配置](docs/config.md)。
 
 ### 接口实现
 
