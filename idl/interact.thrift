@@ -4,9 +4,9 @@ include "model.thrift"
 
 //点赞操作
 struct LikeRequest{
-    1:optional string video_id,
-    2:optional string comment_id,
-    3:required string action_type,
+    1:optional string video_id (api.form="video_id"),
+    2:optional string comment_id (api.form="comment_id"),
+    3:required string action_type (api.form="action_type"),
 }
 
 struct LikeResponse{
@@ -15,9 +15,9 @@ struct LikeResponse{
 
 //点赞列表
 struct LikeListRequest{
-    1:required string user_id,
-    2:required i64 page_size,
-    3:required i64 page_num,
+    1:required string user_id (api.query="user_id"),
+    2:required i64 page_size (api.query="page_size"),
+    3:required i64 page_num (api.query="page_num"),
 }
 
 struct LikeListResponse{
@@ -27,9 +27,9 @@ struct LikeListResponse{
 
 //评论
 struct CommentRequest{
-    1:optional string video_id,
-    2:optional string comment_id,
-    3:required string content,
+    1:optional string video_id (api.form="video_id"),
+    2:optional string comment_id (api.form="comment_id"),
+    3:required string content (api.form="content"),
 }
 
 struct CommentResponse{
@@ -38,9 +38,10 @@ struct CommentResponse{
 
 //评论列表
 struct CommentListRequest{
-    1:required string video_id,
-    2:required i64 page_size,
-    3:required i64 page_num,
+    1:optional string video_id (api.query="video_id"),
+    2:optional string comment_id (api.query="comment_id"),
+    3:required i64 page_size (api.query="page_size"),
+    4:required i64 page_num (api.query="page_num"),
 }
 
 struct CommentListResponse{
@@ -50,7 +51,7 @@ struct CommentListResponse{
 
 //删除评论
 struct DeleteCommentRequest{
-    1:required string comment_id,
+    1:required string comment_id (api.query="comment_id"),
 
 }
 

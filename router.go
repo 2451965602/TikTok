@@ -4,7 +4,7 @@ package main
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	"work4/biz/handler"
+	"tiktok/biz/handler"
 )
 
 // customizeRegister registers customize routers.

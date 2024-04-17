@@ -5,9 +5,10 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"mime/multipart"
 	"strconv"
-	"work4/biz/dal/db"
-	"work4/biz/model/user"
-	"work4/pkg/oss"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/model/user"
+	"tiktok/pkg/errmsg"
+	"tiktok/pkg/oss"
 )
 
 type UserService struct {
@@ -56,4 +57,18 @@ func (s *UserService) MFAGet() (*db.MFA, error) {
 
 func (s *UserService) MFABind(req *user.MFABindRequest) error {
 	return db.MFABind(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.Secret, req.Code)
+}
+
+func (s *UserService) MFAStatus(req *user.MFAStatusRequest) error {
+
+	if req.ActionType != "0" && req.ActionType != "1" {
+		return errmsg.IllegalParamError
+	}
+
+	err := db.MFAStatus(s.ctx, strconv.FormatInt(GetUidFormContext(s.c), 10), req.Code, req.ActionType)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

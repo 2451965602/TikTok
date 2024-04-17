@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"work4/biz/dal"
-	"work4/pkg/constants"
+	"strings"
+	"tiktok/biz/dal"
+	"tiktok/biz/middleware/sentinel"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
 
 var Config *viper.Viper
@@ -15,8 +18,13 @@ func Init() error {
 	Config.SetConfigFile("./config/config.json")
 	Config.SetConfigType("json")
 	if err := Config.ReadInConfig(); err != nil {
-		return err
+		return errmsg.ConfigMissError
 	}
+
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("tiktok")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
 	loadConfig()
 
 	go func() {
@@ -49,4 +57,8 @@ func loadConfig() {
 	constants.QiNiuAccessKey = Config.GetString("QiNiu.AccessKey")
 	constants.QiNiuSecretKey = Config.GetString("QiNiu.SecretKey")
 	constants.QiNiuDomain = Config.GetString("QiNiu.Domain")
+
+	constants.SentinelThreshold = Config.GetFloat64("Sentinel.Threshold")
+	constants.SentinelStatIntervalInMs = Config.GetUint32("Sentinel.StatIntervalInMs")
+	sentinel.Init()
 }

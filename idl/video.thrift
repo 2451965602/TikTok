@@ -5,9 +5,9 @@ include "model.thrift"
 
 //视频流
 struct FeedRequest{
-    1:optional string latest_time
-    2:required i64 page_num,
-    3:required i64 page_size,
+    1:optional string latest_time(api.query="latest_time"),
+    2:required i64 page_num (api.query="page_num"),
+    3:required i64 page_size (api.query="page_size")
 }
 
 struct FeedResponse{
@@ -17,9 +17,10 @@ struct FeedResponse{
 
 //投稿
 struct UploadRequest{
-    1:required string title
-//    2:required binary data
-    2:required string description,
+    1:required string title (api.form="title"),
+//    2:required binary coverdata (api.form="coverdata"),
+//    3:required binary videodata (api.form="videodata"),
+    2:required string description (api.form="description"),
 }
 
 struct UploadResponse{
@@ -27,9 +28,9 @@ struct UploadResponse{
 }
 //发布列表
 struct UploadListRequest{
-    1:required string user_id,
-    2:required i64 page_num,
-    3:required i64 page_size,
+    1:required string user_id (api.query="user_id"),
+    2:required i64 page_num (api.query="page_num"),
+    3:required i64 page_size (api.query="page_size"),
 }
 struct UploadListResponse{
     1:model.BaseResp base,
@@ -38,8 +39,8 @@ struct UploadListResponse{
 
 //热门排行榜
 struct RankRequest{
-    1:required i64 page_num,
-    2:required i64 page_size,
+    1:required i64 page_num (api.query="page_num"),
+    2:required i64 page_size (api.query="page_size"),
 }
 struct RankResponse{
     1:model.BaseResp base,
@@ -47,12 +48,12 @@ struct RankResponse{
 }
 //搜索视频
 struct QueryRequest{
-    1:required string keywords,
-    2:required i64 page_size,
-    3:required i64 page_num,
-    4:optional i64 from_date,
-    5:optional i64 to_date
-    6:optional string username,
+    1:required string keywords (api.form="keywords"),
+    2:required i64 page_size (api.form="page_size"),
+    3:required i64 page_num (api.form="page_num"),
+    4:optional i64 from_date (api.form="from_date"),
+    5:optional i64 to_date (api.form="to_date"),
+    6:optional string username (api.form="username"),
 }
 struct QueryResponse{
     1:model.BaseResp base,

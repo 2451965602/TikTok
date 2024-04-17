@@ -1,4 +1,4 @@
-MODULE = work4
+MODULE = tiktok
 
 SERVICE_NAME = video
 

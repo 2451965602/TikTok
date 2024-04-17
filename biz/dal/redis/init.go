@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/redis/go-redis/v9"
-	"work4/pkg/constants"
+	"tiktok/pkg/constants"
 )
 
 var (

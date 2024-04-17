@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"strconv"
-	"work4/biz/dal/db"
-	"work4/biz/dal/redis"
-	"work4/biz/model/interact"
-	"work4/pkg/errmsg"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/dal/redis"
+	"tiktok/biz/model/interact"
+	"tiktok/pkg/errmsg"
 )
 
 type InteractService struct {
@@ -21,9 +21,7 @@ func NewInteractService(ctx context.Context, c *app.RequestContext) *InteractSer
 
 func (s *InteractService) Like(req *interact.LikeRequest) error {
 
-	var (
-		err error
-	)
+	var err error
 
 	if req.VideoID != nil && req.CommentID == nil {
 
@@ -32,7 +30,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 			return errmsg.ParseError
 		}
 
-		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), VideoID, req.ActionType, "video")
+		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), VideoID, req.ActionType, "Video")
 		if err != nil {
 			return err
 		}
@@ -44,7 +42,7 @@ func (s *InteractService) Like(req *interact.LikeRequest) error {
 			return errmsg.ParseError
 		}
 
-		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), CommentID, req.ActionType, "comment")
+		err = db.CreateLike(s.ctx, GetUidFormContext(s.c), CommentID, req.ActionType, "Comment")
 		if err != nil {
 			return err
 		}
@@ -96,6 +94,7 @@ func (s *InteractService) LikeList(req *interact.LikeListRequest) ([]*db.Video, 
 		v.CommentCount = count.CommentCount
 		resp = append(resp, v)
 	}
+
 	return resp, num, nil
 }
 
@@ -132,8 +131,21 @@ func (s *InteractService) Comment(req *interact.CommentRequest) error {
 	return nil
 }
 
-func (s *InteractService) CommentList(req *interact.CommentListRequest) ([]*db.Comment, int64, error) {
-	return db.CommentList(s.ctx, req.VideoID, req.PageNum, req.PageSize)
+func (s *InteractService) CommentList(req *interact.CommentListRequest) (resp []*db.Comment, count int64, err error) {
+
+	if req.VideoID != nil && req.CommentID == nil {
+		resp, count, err = db.CommentList(s.ctx, *req.VideoID, req.PageNum, req.PageSize, "video")
+	} else if req.CommentID != nil && req.VideoID == nil {
+		resp, count, err = db.CommentList(s.ctx, *req.CommentID, req.PageNum, req.PageSize, "comment")
+	} else {
+		return nil, -1, errmsg.IllegalParamError
+	}
+
+	if err != nil {
+		return nil, -1, err
+	}
+
+	return
 }
 
 func (s *InteractService) DeleteComment(req *interact.DeleteCommentRequest) error {

@@ -2,8 +2,8 @@ package pack
 
 import (
 	"strconv"
-	"work4/biz/dal/db"
-	"work4/biz/model/model"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/model/model"
 )
 
 func Comment(data *db.Comment) *model.Comment {

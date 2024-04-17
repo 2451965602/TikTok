@@ -4,7 +4,7 @@ package social
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	social "work4/biz/handler/social"
+	social "tiktok/biz/handler/social"
 )
 
 /*

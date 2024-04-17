@@ -4,8 +4,8 @@ include "model.thrift"
 
 //关注操作
 struct StarRequest{
-    1:required string to_user_id,
-    2:required i64 action_type,
+    1:required string to_user_id (api.form="to_user_id"),
+    2:required i64 action_type (api.form="action_type"),
 }
 
 struct StarResponse{
@@ -14,9 +14,9 @@ struct StarResponse{
 
 //关注列表
 struct StarListRequest{
-    1:required string user_id,
-    2:required i64 page_size,
-    3:required i64 page_num,
+    1:required string user_id (api.query="user_id"),
+    2:required i64 page_size (api.query="page_size"),
+    3:required i64 page_num (api.query="page_num"),
 }
 
 struct StarListResponse{
@@ -26,9 +26,9 @@ struct StarListResponse{
 
 //粉丝列表
 struct FanListRequest{
-    1:required string user_id,
-    2:required i64 page_size,
-    3:required i64 page_num,
+    1:required string user_id (api.query="user_id"),
+    2:required i64 page_size (api.query="page_size"),
+    3:required i64 page_num (api.query="page_num"),
 }
 
 struct FanListResponse{
@@ -38,8 +38,8 @@ struct FanListResponse{
 
 //好友列表
 struct FriendListRequest{
-    1:required i64 page_size,
-    2:required i64 page_num,
+    1:required i64 page_size (api.query="page_size"),
+    2:required i64 page_num (api.query="page_num"),
 }
 
 struct FriendListResponse{

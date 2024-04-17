@@ -4,7 +4,7 @@ package video
 
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
-	video "work4/biz/handler/video"
+	video "tiktok/biz/handler/video"
 )
 
 /*

@@ -2,9 +2,36 @@ linters:
     # 启用特定的 linter
     # https://golangci-lint.run/usage/linters/#enabled-by-default
     enable:
-        - bodyclose
+        - copyloopvar
+        - dupl
+        - durationcheck
         - goconst
+        - goerr113
+        - goprintffuncname
+        - gosec
+        - inamedparam
+        - mirror
+        - misspell
+        - nestif
+        - nilnil
+        - nlreturn
+        - nosprintfhostport
+        - perfsprint
+        - predeclared
         - unconvert
+        - unparam
+
+
+linters-settings:
+    funlen:
+        lines: 100
+        ignore-comments: true
+    goconst:
+        ignore-tests: true
+    nestif:
+        min-complexity: 10
+
+
 
 issues:
 
@@ -12,3 +39,8 @@ issues:
         -   path: biz/handler/websocket/websocket.go
             linters:
                 - errcheck
+        -   path: main_test.go
+            linters:
+                - errcheck
+                - nlreturn
+                - gosec

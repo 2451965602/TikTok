@@ -9,8 +9,13 @@ const (
 	AuthErrorCode
 	ParseErrorCode
 	DuplicationErrorCode
+	IllegalParamErrorCode
+
 	DatabaseErrorCode
 	RedisErrorCode
+	ConfigMissErrorCode
+
+	SentinelBlockCode
 
 	FileReadErrorCode
 	FilePathCreateErrorCode
@@ -40,12 +45,17 @@ const (
 const (
 	NoErrorMsg = "OK"
 
-	ServiceErrorMsg     = "Service Error"
-	AuthErrorMsg        = "Auth Error"
-	ParseErrorMsg       = "Parse Error"
-	DuplicationErrorMsg = "Duplication Request"
-	DatabaseErrorMsg    = "Database Operation Error"
-	RedisErrorMsg       = "Redis Operation Error"
+	ServiceErrorMsg      = "Service Error"
+	AuthErrorMsg         = "Auth Error"
+	ParseErrorMsg        = "Parse Error"
+	DuplicationErrorMsg  = "Duplication Request"
+	IllegalParamErrorMsg = "Illegal Param"
+
+	DatabaseErrorMsg = "Database Operation Error"
+
+	RedisErrorMsg      = "Redis Operation Error"
+	ConfigMissErrorMsg = "Config Missing Error"
+	SentinelBlockMsg   = "Request Too Frequent"
 
 	FileReadErrorMsg       = "File Read Error"
 	FilePathCreateErrorMsg = "Create File Path Error"
@@ -95,12 +105,15 @@ func NewErrorMessage(code int64, msg string) ErrorMessage {
 var (
 	NoError = NewErrorMessage(NoErrorCode, NoErrorMsg)
 
-	ServiceError     = NewErrorMessage(ServiceErrCode, ServiceErrorMsg)
-	AuthError        = NewErrorMessage(AuthErrorCode, AuthErrorMsg)
-	ParseError       = NewErrorMessage(ParseErrorCode, ParseErrorMsg)
-	DuplicationError = NewErrorMessage(DuplicationErrorCode, DuplicationErrorMsg)
-	DatabaseError    = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
-	RedisError       = NewErrorMessage(RedisErrorCode, RedisErrorMsg)
+	ServiceError      = NewErrorMessage(ServiceErrCode, ServiceErrorMsg)
+	AuthError         = NewErrorMessage(AuthErrorCode, AuthErrorMsg)
+	ParseError        = NewErrorMessage(ParseErrorCode, ParseErrorMsg)
+	DuplicationError  = NewErrorMessage(DuplicationErrorCode, DuplicationErrorMsg)
+	IllegalParamError = NewErrorMessage(IllegalParamErrorCode, IllegalParamErrorMsg)
+
+	DatabaseError   = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
+	RedisError      = NewErrorMessage(RedisErrorCode, RedisErrorMsg)
+	ConfigMissError = NewErrorMessage(ConfigMissErrorCode, ConfigMissErrorMsg)
 
 	FileReadError       = NewErrorMessage(FileReadErrorCode, FileReadErrorMsg)
 	FilePathCreateError = NewErrorMessage(FilePathCreateErrorCode, FilePathCreateErrorMsg)

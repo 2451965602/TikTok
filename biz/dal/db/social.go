@@ -4,9 +4,42 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
+
+func QuerySocialStatus(ctx context.Context, userID int64) (Social, error) {
+
+	var (
+		resp Social
+		err  error
+	)
+	err = DB.
+		WithContext(ctx).
+		Table(constants.SocialTable).
+		Where("user_id = ?", userID).
+		First(&resp).
+		Error
+
+	return resp, err
+}
+
+func UpdateSocialStatus(ctx context.Context, userID int64, status int) error {
+	return DB.
+		WithContext(ctx).
+		Table(constants.SocialTable).
+		Where("user_id = ?", userID).
+		Update("Status", status).
+		Error
+}
+
+func DeleteSocialRecord(ctx context.Context, userID int64, social *Social) error {
+	return DB.WithContext(ctx).
+		Table(constants.SocialTable).
+		Where("user_id = ?", userID).
+		Delete(social).
+		Error
+}
 
 /*
 UserId > ToUserId
@@ -25,18 +58,13 @@ to
 0-bigid（userid）被(取消)关注
 */
 
-// createOrUpdateFollowRecord 创建或更新关注记录
-func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid, to int64) error {
+// CreateOrUpdateFollowRecord 创建或更新关注记录
+func CreateOrUpdateFollowRecord(ctx context.Context, bigid, smallid, to int64) error {
+
 	var (
-		social Social
 		status int64
 	)
-	err := DB.
-		WithContext(ctx).
-		Table(constants.SocialTable).
-		Where("user_id = ?", bigid).
-		First(&social).
-		Error
+	_, err := QuerySocialStatus(ctx, bigid)
 
 	// 如果关注记录不存在
 	if err != nil {
@@ -46,6 +74,7 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid, to int64) e
 			if to == 0 {
 				status = 2
 			}
+
 			err = DB.
 				WithContext(ctx).
 				Table(constants.SocialTable).
@@ -61,18 +90,47 @@ func createOrUpdateFollowRecord(ctx context.Context, bigid, smallid, to int64) e
 
 			return nil
 		}
+
 		return errmsg.DatabaseError
 	}
 
 	// 更新已有的关注记录
-	err = DB.
-		WithContext(ctx).
-		Table(constants.SocialTable).
-		Where("user_id = ?", bigid).
-		Update("Status", 0).
-		Error
+	err = UpdateSocialStatus(ctx, bigid, 0)
 	if err != nil {
 		return errmsg.DatabaseError
+	}
+
+	return nil
+}
+
+// CancleStarUser 取消关注
+func CancleStarUser(ctx context.Context, bigid, to int64) error {
+	social, err := QuerySocialStatus(ctx, bigid)
+	if err != nil {
+		return errmsg.DatabaseError
+	}
+
+	// 如果是互相关注状态
+	if social.Status == 0 {
+		if to == 1 {
+			// 更新状态为取消关注
+			err = UpdateSocialStatus(ctx, bigid, 2)
+		} else {
+			// 更新状态为取消关注
+			err = UpdateSocialStatus(ctx, bigid, 1)
+		}
+
+		if err != nil {
+			return errmsg.DatabaseError
+		}
+
+	} else {
+		// 删除关注记录
+		err = DeleteSocialRecord(ctx, bigid, &social)
+		if err != nil {
+			return errmsg.DatabaseError
+		}
+
 	}
 
 	return nil
@@ -83,60 +141,18 @@ func StarUser(ctx context.Context, bigid, smallid, actiontype, to int64) (err er
 
 	// 关注操作
 	if actiontype == 0 {
-		err = createOrUpdateFollowRecord(ctx, bigid, smallid, to)
+		err = CreateOrUpdateFollowRecord(ctx, bigid, smallid, to)
 		if err != nil {
 			return err
 		}
-	} else { // 取消关注操作
-		var social Social
-		err = DB.
-			WithContext(ctx).
-			Table(constants.SocialTable).
-			Where("user_id = ?", bigid).
-			First(&social).
-			Error
 
+	} else if actiontype == 1 { // 取消关注操作
+		err = CancleStarUser(ctx, bigid, to)
 		if err != nil {
-			return errmsg.DatabaseError
+			return err
 		}
-
-		// 如果是互相关注状态
-		if social.Status == 0 {
-
-			if to == 1 {
-				// 更新状态为取消关注
-				err = DB.
-					WithContext(ctx).
-					Table(constants.SocialTable).
-					Where("user_id = ?", bigid).
-					Update("Status", 2).
-					Error
-			} else {
-				// 删除关注记录
-				err = DB.
-					WithContext(ctx).
-					Table(constants.SocialTable).
-					Where("user_id = ?", bigid).
-					Update("Status", 1).
-					Error
-			}
-
-			if err != nil {
-				return errmsg.DatabaseError
-			}
-
-		} else {
-			err = DB.
-				WithContext(ctx).
-				Table(constants.SocialTable).
-				Where("user_id = ?", bigid).
-				Delete(&social).
-				Error
-
-			if err != nil {
-				return errmsg.DatabaseError
-			}
-		}
+	} else {
+		return errmsg.IllegalParamError
 	}
 
 	return nil
@@ -187,6 +203,7 @@ func FanUserList(ctx context.Context, userid string, pagenum, pagesize int64) ([
 	if err != nil {
 		return nil, -1, errmsg.DatabaseError
 	}
+
 	return StarResp, count, nil
 }
 

@@ -1,63 +1,13 @@
 package db
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
-	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"image/png"
-	"work4/biz/model/user"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
-	"work4/pkg/util"
-
-	"work4/pkg/crypt"
+	"tiktok/biz/model/user"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/crypt"
+	"tiktok/pkg/errmsg"
 )
-
-func OptSecret(user *User) (*MFA, error) {
-	var MFAResp = &MFA{}
-	var buf bytes.Buffer
-
-	if user.OptSecret == "" {
-		key, err := totp.Generate(totp.GenerateOpts{
-			Issuer:      "westonline",
-			AccountName: user.Username,
-		})
-		if err != nil {
-			return nil, errmsg.MfaGenareteError
-		}
-
-		user.OptSecret = key.String()
-	}
-
-	key, err := otp.NewKeyFromURL(user.OptSecret)
-	if err != nil {
-		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
-	}
-
-	img, err := key.Image(200, 200)
-	if err != nil {
-		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
-	}
-
-	err = png.Encode(&buf, img)
-	if err != nil {
-		return nil, errmsg.MfaGenareteError.WithMessage(err.Error())
-	}
-
-	qrcode := base64.StdEncoding.EncodeToString(buf.Bytes())
-
-	secret, err := util.ExtractSecretFromTOTPURL(user.OptSecret)
-	if err != nil {
-		return nil, err
-	}
-
-	MFAResp.Secret = secret
-	MFAResp.Qrcode = qrcode
-
-	return MFAResp, nil
-}
 
 func CreateUser(ctx context.Context, username, password string) (*User, error) {
 
@@ -100,39 +50,39 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 
 func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, error) {
 
-	var userreq *User
+	var userReq *User
 	var userResp *UserInfoDetail
 
 	err := DB.
 		WithContext(ctx).
 		Table(constants.UserTable).
-		Where("username = ?", req.Username).
-		First(&userreq).
+		Where("username=?", req.Username).
+		First(&userReq).
 		Error
 
 	if err != nil {
 		return nil, errmsg.AuthError.WithMessage("Incorrect account number or password")
 	}
 
-	if !crypt.PasswordVerify(req.Password, userreq.Password) {
+	if !crypt.PasswordVerify(req.Password, userReq.Password) {
 		return nil, errmsg.AuthError.WithMessage("Incorrect account number or password")
 	}
 
-	if userreq.OptSecret != "" {
+	if userReq.OptSecret != "" {
 		if req.Code == nil {
 			return nil, errmsg.MfaOptCodeError.WithMessage("OTP code not provided")
 		}
 		value := *req.Code
-		if !totp.Validate(value, userreq.OptSecret) {
+		if !totp.Validate(value, userReq.OptSecret) {
 			return nil, errmsg.MfaOptCodeError
 		}
 	}
 
 	userResp = &UserInfoDetail{
-		UserId:    userreq.UserId,
-		Username:  userreq.Username,
-		AvatarUrl: userreq.AvatarUrl,
-		CreatedAt: userreq.CreatedAt,
+		UserId:    userReq.UserId,
+		Username:  userReq.Username,
+		AvatarUrl: userReq.AvatarUrl,
+		CreatedAt: userReq.CreatedAt,
 	}
 
 	return userResp, nil
@@ -166,9 +116,13 @@ func UploadAvatar(ctx context.Context, id, url string) (*User, error) {
 		Table(constants.UserTable).
 		Where("user_id = ?", id).
 		Update("avatar_url", url).
-		First(&userResp).
 		Error
 
+	if err != nil {
+		return nil, errmsg.DatabaseError
+	}
+
+	userResp, err = GetUserInfo(ctx, id)
 	if err != nil {
 		return nil, errmsg.DatabaseError
 	}
@@ -178,20 +132,13 @@ func UploadAvatar(ctx context.Context, id, url string) (*User, error) {
 
 func MFAGet(ctx context.Context, id string) (*MFA, error) {
 
-	var userreq *User
-
-	err := DB.
-		WithContext(ctx).
-		Table(constants.UserTable).
-		Where("user_id = ?", id).
-		First(&userreq).
-		Error
+	userReq, err := GetUserInfo(ctx, id)
 
 	if err != nil {
 		return nil, errmsg.DatabaseError
 	}
 
-	MFAResp, err := OptSecret(userreq)
+	MFAResp, err := OptSecret(userReq)
 	if err != nil {
 		return nil, err
 	}
@@ -207,6 +154,36 @@ func MFABind(ctx context.Context, id, secret, code string) error {
 			Table(constants.UserTable).
 			Where("user_id = ?", id).
 			Update("opt_secret", secret).
+			Update("mfa_status", 1).
+			Error
+
+		if err != nil {
+			return errmsg.DatabaseError
+		}
+
+		return nil
+	}
+
+	return errmsg.MfaOptCodeError
+}
+
+func MFAStatus(ctx context.Context, id, code, ActionType string) error {
+
+	userInfo, err := GetUserInfo(ctx, id)
+	if err != nil {
+		return errmsg.DatabaseError
+	}
+
+	if ActionType == userInfo.MfaStatus {
+		return errmsg.DuplicationError
+	}
+
+	if totp.Validate(code, userInfo.OptSecret) {
+		err := DB.
+			WithContext(ctx).
+			Table(constants.UserTable).
+			Where("user_id = ?", id).
+			Update("mfa_status", ActionType).
 			Error
 
 		if err != nil {

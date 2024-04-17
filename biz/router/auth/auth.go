@@ -3,9 +3,9 @@ package auth
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
-	"work4/biz/middleware"
-	"work4/biz/pack"
-	"work4/pkg/errmsg"
+	"tiktok/biz/middleware/jwt"
+	"tiktok/biz/pack"
+	"tiktok/pkg/errmsg"
 )
 
 func Auth() []app.HandlerFunc {
@@ -16,13 +16,14 @@ func Auth() []app.HandlerFunc {
 
 func DoubleTokenAuthFunc() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
-		if !middleware.IsAccessTokenAvailable(ctx, c) {
-			if !middleware.IsRefreshTokenAvailable(ctx, c) {
+		if !jwt.IsAccessTokenAvailable(ctx, c) {
+			if !jwt.IsRefreshTokenAvailable(ctx, c) {
 				pack.BuildFailResponse(c, errmsg.AuthError)
 				c.Abort()
+
 				return
 			}
-			middleware.GenerateAccessToken(c)
+			jwt.GenerateAccessToken(c)
 		}
 
 		c.Next(ctx)

@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"tiktok/biz/model/video"
+	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 	"time"
-	"work4/biz/model/video"
-	"work4/pkg/constants"
-	"work4/pkg/errmsg"
 )
 
 func Feed(ctx context.Context, req *video.FeedRequest) ([]*Video, int64, error) {
@@ -155,7 +155,8 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Table(constants.VideoTable).
 			Where("id=?", userinfo.UserId).
 			Where("created_at > ? and created_at < ?", time.Unix(*req.FromDate, 0), time.Unix(*req.ToDate, 0)).
-			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
@@ -185,7 +186,8 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			WithContext(ctx).
 			Table(constants.VideoTable).
 			Where("id=?", userinfo.UserId).
-			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
@@ -202,7 +204,8 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 		err = DB.
 			WithContext(ctx).
 			Table(constants.VideoTable).
-			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
@@ -215,4 +218,21 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 	}
 
 	return videoResp, count, nil
+}
+
+func UpdataVideoCounts(ctx context.Context, videoid string, counts Counts) error {
+	err := DB.
+		WithContext(ctx).
+		Table(constants.VideoTable).
+		Where("video_id=?", videoid).
+		Update("like_count", counts.LikeCount).
+		Update("comment_count", counts.CommentCount).
+		Update("visit_count", counts.VisitCount).
+		Error
+
+	if err != nil {
+		return errmsg.DatabaseError
+	}
+
+	return nil
 }

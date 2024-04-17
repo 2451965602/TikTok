@@ -4,13 +4,13 @@ package social
 
 import (
 	"context"
-	"work4/biz/pack"
-	"work4/biz/service"
-	"work4/pkg/errmsg"
+	"tiktok/biz/pack"
+	"tiktok/biz/service"
+	"tiktok/pkg/errmsg"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	"work4/biz/model/social"
+	"tiktok/biz/model/social"
 )
 
 // Star .

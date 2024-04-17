@@ -5,6 +5,7 @@ CREATE TABLE west.`user`
     `password`   varchar(255) NOT NULL,
     `avatar_url` varchar(255) NOT NULL,
     `opt_secret` varchar(255) NOT NULL DEFAULT '',
+    `mfa_status` bigint NOT NULL DEFAULT 0,
     `created_at` timestamp    NOT NULL DEFAULT current_timestamp,
     `updated_at` timestamp    NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
     `deleted_at` timestamp NULL DEFAULT NULL,

@@ -2,14 +2,15 @@ package pack
 
 import (
 	"strconv"
-	"work4/biz/dal/db"
-	"work4/biz/model/model"
-	"work4/pkg/constants"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/model/model"
+	"tiktok/pkg/constants"
 )
 
 func User(data *db.User) *model.User {
 	create := strconv.FormatInt(data.CreatedAt.Unix(), 10)
 	update := strconv.FormatInt(data.UpdatedAt.Unix(), 10)
+
 	return &model.User{
 		ID:        strconv.FormatInt(data.UserId, 10),
 		Username:  data.Username,

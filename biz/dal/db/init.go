@@ -4,8 +4,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"tiktok/pkg/constants"
 	"time"
-	"work4/pkg/constants"
 )
 
 var DB *gorm.DB
@@ -32,4 +32,5 @@ func Init() {
 	sqlDB.SetConnMaxLifetime(10 * time.Second)
 
 	hlog.Info("MsSQL连接成功")
+
 }

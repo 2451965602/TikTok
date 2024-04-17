@@ -6,14 +6,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
-	"work4/biz/model/model"
+	"tiktok/biz/model/model"
 )
 
 // 视频流
 type FeedRequest struct {
-	LatestTime *string `thrift:"latest_time,1,optional" form:"latest_time" json:"latest_time,omitempty" query:"latest_time"`
-	PageNum    int64   `thrift:"page_num,2,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	PageSize   int64   `thrift:"page_size,3,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
+	LatestTime *string `thrift:"latest_time,1,optional" json:"latest_time,omitempty" query:"latest_time"`
+	PageNum    int64   `thrift:"page_num,2,required" json:"page_num,required" query:"page_num,required"`
+	PageSize   int64   `thrift:"page_size,3,required" json:"page_size,required" query:"page_size,required"`
 }
 
 func NewFeedRequest() *FeedRequest {
@@ -454,9 +454,10 @@ func (p *FeedResponse) String() string {
 
 // 投稿
 type UploadRequest struct {
-	Title string `thrift:"title,1,required" form:"title,required" json:"title,required" query:"title,required"`
-	//    2:required binary data
-	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
+	Title string `thrift:"title,1,required" form:"title,required" json:"title,required"`
+	//    2:required binary coverdata (api.form="coverdata"),
+	//    3:required binary videodata (api.form="videodata"),
+	Description string `thrift:"description,2,required" form:"description,required" json:"description,required"`
 }
 
 func NewUploadRequest() *UploadRequest {
@@ -792,9 +793,9 @@ func (p *UploadResponse) String() string {
 
 // 发布列表
 type UploadListRequest struct {
-	UserID   string `thrift:"user_id,1,required" form:"user_id,required" json:"user_id,required" query:"user_id,required"`
-	PageNum  int64  `thrift:"page_num,2,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	PageSize int64  `thrift:"page_size,3,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
+	UserID   string `thrift:"user_id,1,required" json:"user_id,required" query:"user_id,required"`
+	PageNum  int64  `thrift:"page_num,2,required" json:"page_num,required" query:"page_num,required"`
+	PageSize int64  `thrift:"page_size,3,required" json:"page_size,required" query:"page_size,required"`
 }
 
 func NewUploadListRequest() *UploadListRequest {
@@ -1231,8 +1232,8 @@ func (p *UploadListResponse) String() string {
 
 // 热门排行榜
 type RankRequest struct {
-	PageNum  int64 `thrift:"page_num,1,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	PageSize int64 `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
+	PageNum  int64 `thrift:"page_num,1,required" json:"page_num,required" query:"page_num,required"`
+	PageSize int64 `thrift:"page_size,2,required" json:"page_size,required" query:"page_size,required"`
 }
 
 func NewRankRequest() *RankRequest {
@@ -1619,12 +1620,12 @@ func (p *RankResponse) String() string {
 
 // 搜索视频
 type QueryRequest struct {
-	Keywords string  `thrift:"keywords,1,required" form:"keywords,required" json:"keywords,required" query:"keywords,required"`
-	PageSize int64   `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required" query:"page_size,required"`
-	PageNum  int64   `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required" query:"page_num,required"`
-	FromDate *int64  `thrift:"from_date,4,optional" form:"from_date" json:"from_date,omitempty" query:"from_date"`
-	ToDate   *int64  `thrift:"to_date,5,optional" form:"to_date" json:"to_date,omitempty" query:"to_date"`
-	Username *string `thrift:"username,6,optional" form:"username" json:"username,omitempty" query:"username"`
+	Keywords string  `thrift:"keywords,1,required" form:"keywords,required" json:"keywords,required"`
+	PageSize int64   `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required"`
+	PageNum  int64   `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required"`
+	FromDate *int64  `thrift:"from_date,4,optional" form:"from_date" json:"from_date,omitempty"`
+	ToDate   *int64  `thrift:"to_date,5,optional" form:"to_date" json:"to_date,omitempty"`
+	Username *string `thrift:"username,6,optional" form:"username" json:"username,omitempty"`
 }
 
 func NewQueryRequest() *QueryRequest {

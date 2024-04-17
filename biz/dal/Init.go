@@ -1,8 +1,8 @@
 package dal
 
 import (
-	"work4/biz/dal/db"
-	"work4/biz/dal/redis"
+	"tiktok/biz/dal/db"
+	"tiktok/biz/dal/redis"
 )
 
 func MysqlInit() {
