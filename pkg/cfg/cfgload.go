@@ -3,6 +3,7 @@ package cfg
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/prometheus/common/log"
 	"github.com/spf13/viper"
 	"strings"
 	"tiktok/biz/dal"
@@ -27,13 +28,17 @@ func Init() error {
 
 	err := loadConfig()
 	if err != nil {
+
 		return err
 	}
 
 	go func() {
 		Config.WatchConfig()
 		Config.OnConfigChange(func(e fsnotify.Event) {
-			loadConfig()
+			err := loadConfig()
+			if err != nil {
+				log.Error(err)
+			}
 		})
 	}()
 

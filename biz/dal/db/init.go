@@ -34,6 +34,7 @@ func Init() error {
 
 	if err = sqlDB.Ping(); err != nil {
 		hlog.Error("数据库Ping失败: ", err)
+
 		return errmsg.MysqlInitError.WithMessage(err.Error()) // 返回自定义错误消息
 	}
 	hlog.Info("MsSQL连接成功")
