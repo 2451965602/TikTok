@@ -50,16 +50,7 @@ func CreateUser(ctx context.Context, username, password string) (*User, error) {
 
 func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, error) {
 
-	var userReq *User
-	var userResp *UserInfoDetail
-
-	err := DB.
-		WithContext(ctx).
-		Table(constants.UserTable).
-		Where("username=?", req.Username).
-		First(&userReq).
-		Error
-
+	userReq, err := GetUserInfoByName(ctx, req.Username)
 	if err != nil {
 		return nil, errmsg.AuthError.WithMessage("Incorrect account number or password")
 	}
@@ -68,7 +59,7 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, e
 		return nil, errmsg.AuthError.WithMessage("Incorrect account number or password")
 	}
 
-	if userReq.OptSecret != "" {
+	if userReq.OptSecret != "" && userReq.MfaStatus == "1" {
 		if req.Code == nil {
 			return nil, errmsg.MfaOptCodeError.WithMessage("OTP code not provided")
 		}
@@ -78,7 +69,7 @@ func LoginCheck(ctx context.Context, req *user.LoginRequest) (*UserInfoDetail, e
 		}
 	}
 
-	userResp = &UserInfoDetail{
+	userResp := &UserInfoDetail{
 		UserId:    userReq.UserId,
 		Username:  userReq.Username,
 		AvatarUrl: userReq.AvatarUrl,

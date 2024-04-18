@@ -51,7 +51,9 @@ const (
 	DuplicationErrorMsg  = "Duplication Request"
 	IllegalParamErrorMsg = "Illegal Param"
 
-	DatabaseErrorMsg = "Database Operation Error"
+	DatabaseErrorMsg  = "Database Operation Error"
+	RedisInitErrorMsg = "Redis Init Error"
+	MysqlInitErrorMsg = "Mysql Init Error"
 
 	RedisErrorMsg      = "Redis Operation Error"
 	ConfigMissErrorMsg = "Config Missing Error"
@@ -114,6 +116,8 @@ var (
 	DatabaseError   = NewErrorMessage(DatabaseErrorCode, DatabaseErrorMsg)
 	RedisError      = NewErrorMessage(RedisErrorCode, RedisErrorMsg)
 	ConfigMissError = NewErrorMessage(ConfigMissErrorCode, ConfigMissErrorMsg)
+	RedisInitError  = NewErrorMessage(RedisErrorCode, RedisInitErrorMsg)
+	MysqlInitError  = NewErrorMessage(DatabaseErrorCode, MysqlInitErrorMsg)
 
 	FileReadError       = NewErrorMessage(FileReadErrorCode, FileReadErrorMsg)
 	FilePathCreateError = NewErrorMessage(FilePathCreateErrorCode, FilePathCreateErrorMsg)

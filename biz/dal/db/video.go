@@ -134,18 +134,11 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 	var videoResp []*Video
 	var err error
 	var count int64
-	var userinfo *UserInfo
+	var userinfo *User
 
-	if req.Username != nil && req.FromDate != nil && req.ToDate != nil {
+	if req.Keywords != nil && req.Username != nil && req.FromDate != nil && req.ToDate != nil {
 
-		err := DB.
-			WithContext(ctx).
-			Table(constants.UserTable).
-			Select("user_id,username,avatar_url,created_at,updated_at,deleted_at").
-			Where("username = ?", req.Username).
-			First(&userinfo).
-			Error
-
+		userinfo, err = GetUserInfoByName(ctx, *req.Username)
 		if err != nil {
 			return nil, -1, errmsg.UserNotExistError
 		}
@@ -155,28 +148,62 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			Table(constants.VideoTable).
 			Where("id=?", userinfo.UserId).
 			Where("created_at > ? and created_at < ?", time.Unix(*req.FromDate, 0), time.Unix(*req.ToDate, 0)).
-			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
-			Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
 			Find(&videoResp).
 			Error
+		if err != nil {
+			return nil, -1, errmsg.DatabaseError
+		}
 
+	} else if req.Keywords == nil && req.Username != nil && req.FromDate != nil && req.ToDate != nil {
+
+		userinfo, err = GetUserInfoByName(ctx, *req.Username)
+		if err != nil {
+			return nil, -1, errmsg.UserNotExistError
+		}
+
+		err = DB.
+			WithContext(ctx).
+			Table(constants.VideoTable).
+			Where("id=?", userinfo.UserId).
+			Where("created_at > ? and created_at < ?", time.Unix(*req.FromDate, 0), time.Unix(*req.ToDate, 0)).
+			Limit(int(req.PageSize)).
+			Offset(int((req.PageNum - 1) * req.PageSize)).
+			Count(&count).
+			Find(&videoResp).
+			Error
+		if err != nil {
+			return nil, -1, errmsg.DatabaseError
+		}
+
+	} else if req.Keywords != nil && req.Username == nil && req.FromDate != nil && req.ToDate != nil {
+
+		err = DB.
+			WithContext(ctx).
+			Table(constants.VideoTable).
+			Where("created_at > ? and created_at < ?", time.Unix(*req.FromDate, 0), time.Unix(*req.ToDate, 0)).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
+			Limit(int(req.PageSize)).
+			Offset(int((req.PageNum - 1) * req.PageSize)).
+			Count(&count).
+			Find(&videoResp).
+			Error
 		if err != nil {
 			return nil, -1, errmsg.DatabaseError
 		}
 	}
 
-	if req.Username != nil && req.FromDate == nil && req.ToDate == nil {
+	if req.Keywords != nil && req.Username != nil && req.FromDate == nil && req.ToDate == nil {
 
-		err := DB.
-			WithContext(ctx).
-			Table(constants.UserTable).
-			Select("user_id,username,avatar_url,created_at,updated_at,deleted_at").
-			Where("username = ?", req.Username).
-			First(&userinfo).
-			Error
+		userinfo, err = GetUserInfoByName(ctx, *req.Username)
+		if err != nil {
+			return nil, -1, errmsg.UserNotExistError
+		}
 
 		if err != nil {
 			return nil, -1, errmsg.UserNotExistError
@@ -186,35 +213,53 @@ func Query(ctx context.Context, req *video.QueryRequest) ([]*Video, int64, error
 			WithContext(ctx).
 			Table(constants.VideoTable).
 			Where("id=?", userinfo.UserId).
-			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
-			Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
 			Find(&videoResp).
 			Error
-
 		if err != nil {
 			return nil, -1, errmsg.DatabaseError
 		}
-	}
 
-	if req.Username == nil && req.FromDate == nil && req.ToDate == nil {
+	} else if req.Keywords == nil && req.Username != nil && req.FromDate == nil && req.ToDate == nil {
+
+		userinfo, err = GetUserInfoByName(ctx, *req.Username)
+		if err != nil {
+			return nil, -1, errmsg.UserNotExistError
+		}
 
 		err = DB.
 			WithContext(ctx).
 			Table(constants.VideoTable).
-			Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
-			Or("description LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords)).
+			Where("id=?", userinfo.UserId).
 			Limit(int(req.PageSize)).
 			Offset(int((req.PageNum - 1) * req.PageSize)).
 			Count(&count).
 			Find(&videoResp).
 			Error
-
 		if err != nil {
 			return nil, -1, errmsg.DatabaseError
 		}
+
+	} else if req.Keywords != nil && req.Username == nil && req.FromDate == nil && req.ToDate == nil {
+
+		err = DB.
+			WithContext(ctx).
+			Table(constants.VideoTable).
+			Where("title LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
+			Or("description LIKE ?", fmt.Sprintf("%%%s%%", *req.Keywords)).
+			Limit(int(req.PageSize)).
+			Offset(int((req.PageNum - 1) * req.PageSize)).
+			Count(&count).
+			Find(&videoResp).
+			Error
+		if err != nil {
+			return nil, -1, errmsg.DatabaseError
+		}
+
 	}
 
 	return videoResp, count, nil

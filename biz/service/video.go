@@ -129,6 +129,11 @@ func (s *VideoService) Rank(req *video.RankRequest) ([]*db.Video, error) {
 
 func (s *VideoService) Query(req *video.QueryRequest) ([]*db.Video, int64, error) {
 
+	if req.Keywords == nil && req.Username == nil {
+
+		return nil, -1, errmsg.IllegalParamError
+	}
+
 	var resp []*db.Video
 
 	resp, num, err := db.Query(s.ctx, req)
