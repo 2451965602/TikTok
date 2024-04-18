@@ -5,6 +5,9 @@
 
 环境变量及配置文件请参考 [配置](docs/config.md)。
 
+### 飞书文档
+[文档链接](https://xx1ej21b4un.feishu.cn/wiki/El2zwyOiniigc0kaNdfcYGW6n8b)
+
 ### 接口实现
 
 | 已实现接口                   | 备注         | 已实现接口                   | 备注         |

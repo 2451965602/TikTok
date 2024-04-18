@@ -5,10 +5,20 @@ import (
 	"tiktok/biz/dal/redis"
 )
 
-func MysqlInit() {
-	db.Init()
+func MysqlInit() error {
+	err := db.Init()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func RedisInit() {
-	redis.Init()
+func RedisInit() error {
+	err := redis.Init()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

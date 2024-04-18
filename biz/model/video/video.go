@@ -1620,7 +1620,7 @@ func (p *RankResponse) String() string {
 
 // 搜索视频
 type QueryRequest struct {
-	Keywords string  `thrift:"keywords,1,required" form:"keywords,required" json:"keywords,required"`
+	Keywords *string `thrift:"keywords,1,optional" form:"keywords" json:"keywords,omitempty"`
 	PageSize int64   `thrift:"page_size,2,required" form:"page_size,required" json:"page_size,required"`
 	PageNum  int64   `thrift:"page_num,3,required" form:"page_num,required" json:"page_num,required"`
 	FromDate *int64  `thrift:"from_date,4,optional" form:"from_date" json:"from_date,omitempty"`
@@ -1632,8 +1632,13 @@ func NewQueryRequest() *QueryRequest {
 	return &QueryRequest{}
 }
 
+var QueryRequest_Keywords_DEFAULT string
+
 func (p *QueryRequest) GetKeywords() (v string) {
-	return p.Keywords
+	if !p.IsSetKeywords() {
+		return QueryRequest_Keywords_DEFAULT
+	}
+	return *p.Keywords
 }
 
 func (p *QueryRequest) GetPageSize() (v int64) {
@@ -1680,6 +1685,10 @@ var fieldIDToName_QueryRequest = map[int16]string{
 	6: "username",
 }
 
+func (p *QueryRequest) IsSetKeywords() bool {
+	return p.Keywords != nil
+}
+
 func (p *QueryRequest) IsSetFromDate() bool {
 	return p.FromDate != nil
 }
@@ -1696,7 +1705,6 @@ func (p *QueryRequest) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
-	var issetKeywords bool = false
 	var issetPageSize bool = false
 	var issetPageNum bool = false
 
@@ -1719,7 +1727,6 @@ func (p *QueryRequest) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetKeywords = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1778,11 +1785,6 @@ func (p *QueryRequest) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
-	if !issetKeywords {
-		fieldId = 1
-		goto RequiredFieldNotSetError
-	}
-
 	if !issetPageSize {
 		fieldId = 2
 		goto RequiredFieldNotSetError
@@ -1815,7 +1817,7 @@ func (p *QueryRequest) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Keywords = v
+		p.Keywords = &v
 	}
 	return nil
 }
@@ -1914,14 +1916,16 @@ WriteStructEndError:
 }
 
 func (p *QueryRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("keywords", thrift.STRING, 1); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := oprot.WriteString(p.Keywords); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
+	if p.IsSetKeywords() {
+		if err = oprot.WriteFieldBegin("keywords", thrift.STRING, 1); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteString(*p.Keywords); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
 	}
 	return nil
 WriteFieldBeginError:

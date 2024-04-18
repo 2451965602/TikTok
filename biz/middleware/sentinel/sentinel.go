@@ -4,9 +4,10 @@ import (
 	sentinel "github.com/alibaba/sentinel-golang/api"
 	"github.com/alibaba/sentinel-golang/core/flow"
 	"tiktok/pkg/constants"
+	"tiktok/pkg/errmsg"
 )
 
-func Init() {
+func Init() error {
 
 	err := sentinel.InitDefault()
 	if err != nil {
@@ -23,7 +24,8 @@ func Init() {
 		},
 	})
 	if err != nil {
-		panic(err)
+		return errmsg.ServiceError.WithMessage(err.Error())
 	}
 
+	return nil
 }

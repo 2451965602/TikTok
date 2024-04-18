@@ -6,9 +6,9 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/hertz-contrib/opensergo/sentinel/adapter"
+	"log"
 	"tiktok/biz/middleware/jwt"
 	"tiktok/biz/router/websock"
 	"tiktok/pkg/cfg"
@@ -30,7 +30,7 @@ func main() {
 
 	err := Init()
 	if err != nil {
-		hlog.Error(err)
+		log.Fatal(err)
 		return
 	}
 

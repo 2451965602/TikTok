@@ -48,7 +48,7 @@ struct RankResponse{
 }
 //搜索视频
 struct QueryRequest{
-    1:required string keywords (api.form="keywords"),
+    1:optional string keywords (api.form="keywords"),
     2:required i64 page_size (api.form="page_size"),
     3:required i64 page_num (api.form="page_num"),
     4:optional i64 from_date (api.form="from_date"),

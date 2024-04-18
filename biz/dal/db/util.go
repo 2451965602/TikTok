@@ -107,6 +107,23 @@ func GetUserInfo(ctx context.Context, userid string) (*User, error) {
 	return user, nil
 }
 
+func GetUserInfoByName(ctx context.Context, username string) (*User, error) {
+	var user *User
+
+	err := DB.
+		WithContext(ctx).
+		Table(constants.UserTable).
+		Where("username = ?", username).
+		First(&user).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func OptSecret(user *User) (*MFA, error) {
 	var MFAResp = &MFA{}
 	var buf bytes.Buffer
