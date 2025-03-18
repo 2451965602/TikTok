@@ -55,6 +55,7 @@ func main() {
 	register(h)
 
 	websock.WebsocketRegister(ws)
+	
 	go ws.Spin()
 	h.Spin()
 }
